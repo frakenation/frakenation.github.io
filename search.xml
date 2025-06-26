@@ -366,34 +366,6 @@ temperature scaling
       </tags>
   </entry>
   <entry>
-    <title>关于DDPM的一些疑惑</title>
-    <url>/2025/06/26/%E5%85%B3%E4%BA%8EDDPM%E7%9A%84%E4%B8%80%E4%BA%9B%E7%96%91%E6%83%91/</url>
-    <content><![CDATA[在DDPM当中，也存在着一个类似于VAE的ELBO，我们需要优化他，表现为：
-![图片](屏幕截图 2025-03-10 161953.png)
-其中给关于最后一项的优化我在这里在此复述一下思路：下面的q首先需要拿贝叶斯公式进行推导（因为是反向的，x_0不可以去掉）：
-
-因此我们可以完全写出正态分布函数的参数：
-
-由先验知识我们知道，分子p_θ应该同样遵守高斯分布，所以我们假设他服从一个高斯分布，并且假设他的方差服从q反向传导的方差，这样，KL散度的计算就可以被简化为期望的L2：
-
-接下来，如果我们将p当中的期望项也写成和q一样的格式，但是将x_0替换为我们想要生成的x_θ，然后，又有之前按Markov Chain的推导，我们可以将期望完全写成x_t和一个分布噪声之和的形式，这便是原文当中损失函数的推导：
-
-
-这是我觉得DDPM当中比较难以理解的部分，其他的其实还是很好理解的。关于中间那个式子，再预测出ε_θ其实就很好解决了。
-所以在理解了这个之后，其实也就明白了，为什么训练的过程当中，我们需要神经网络预测的是那个ε_θ（是的，每一小步都要！）。生成过程主要就是下面这样：
-
-下面是一些实现细节Linear Noise Scheduler在正向传播的过程当中，需要用一个调度器（scheduler）来调整每一步的alpha（前大后小），貌似是线性变化的，初始实现是这样，这是第一个职责。
-另外一个职责是，给定了最终的噪声图像x_T，以及预测的分布ε，就可以根据之前推导的公式进行重参数化，其实我觉得本质上就是可以同时实现正反向重参数化的过程（毕竟逻辑相同）。
-t值嵌入
-]]></content>
-      <categories>
-        <category>科研</category>
-      </categories>
-      <tags>
-        <tag>知识积累</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Hello World</title>
     <url>/2025/06/24/hello-world/</url>
     <content><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
@@ -410,5 +382,33 @@ Deploy to remote sites$ hexo deploy
 
 More info: Deployment
 ]]></content>
+  </entry>
+  <entry>
+    <title>关于DDPM的一些疑惑</title>
+    <url>/2025/06/26/%E5%85%B3%E4%BA%8EDDPM%E7%9A%84%E4%B8%80%E4%BA%9B%E7%96%91%E6%83%91/</url>
+    <content><![CDATA[在DDPM当中，也存在着一个类似于VAE的ELBO，我们需要优化他，表现为：
+
+其中给关于最后一项的优化我在这里在此复述一下思路：下面的q首先需要拿贝叶斯公式进行推导（因为是反向的，x_0不可以去掉）：
+
+因此我们可以完全写出正态分布函数的参数：
+
+由先验知识我们知道，分子p_θ应该同样遵守高斯分布，所以我们假设他服从一个高斯分布，并且假设他的方差服从q反向传导的方差，这样，KL散度的计算就可以被简化为期望的L2：
+
+接下来，如果我们将p当中的期望项也写成和q一样的格式，但是将x_0替换为我们想要生成的x_θ，然后，又有之前按Markov Chain的推导，我们可以将期望完全写成x_t和一个分布噪声之和的形式，这便是原文当中损失函数的推导：
+
+
+这是我觉得DDPM当中比较难以理解的部分，其他的其实还是很好理解的。关于中间那个式子，再预测出ε_θ其实就很好解决了。
+所以在理解了这个之后，其实也就明白了，为什么训练的过程当中，我们需要神经网络预测的是那个ε_θ（是的，每一小步都要！）。生成过程主要就是下面这样：
+
+下面是一些实现细节Linear Noise Scheduler在正向传播的过程当中，需要用一个调度器（scheduler）来调整每一步的alpha（前大后小），貌似是线性变化的，初始实现是这样，这是第一个职责。
+另外一个职责是，给定了最终的噪声图像x_T，以及预测的分布ε，就可以根据之前推导的公式进行重参数化，其实我觉得本质上就是可以同时实现正反向重参数化的过程（毕竟逻辑相同）。
+T值嵌入未完待续
+]]></content>
+      <categories>
+        <category>科研</category>
+      </categories>
+      <tags>
+        <tag>知识积累</tag>
+      </tags>
   </entry>
 </search>
