@@ -1,28 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hello World</title>
-    <url>/2025/06/24/hello-world/</url>
-    <content><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
-Quick StartCreate a new post$ hexo new &quot;My New Post&quot;
-
-More info: Writing
-Run server$ hexo server
-
-More info: Server
-Generate static files$ hexo generate
-
-More info: Generating
-Deploy to remote sites$ hexo deploy
-
-More info: Deployment
-]]></content>
-  </entry>
-  <entry>
-    <title>AI4S</title>
+    <title>AI4S平台操作指南</title>
     <url>/2025/06/26/AI4S/</url>
-    <content><![CDATA[目录
+    <content><![CDATA[步骤 1: 删除 .conda 和 .condarc 目录cd ~rm -rf .conda .condarc
+
+步骤 2: 使用bashrc_backup.txt替换原始.bashrc文件首先，我们需要从第117行开始替换您的.bashrc文件。查看您提供的文件，第117行开始的内容是conda初始化部分：
+cd ~# 先备份原始.bashrccp .bashrc .bashrc.old# 保留原始.bashrc的前116行head -n 116 .bashrc.old &gt; .bashrc# 从bashrc_backup.txt的第117行开始追加到.bashrctail -n +117 /home/bml/storage/mnt/v-7c231cc5f5054b0a/org/envs/bashrc_backup.txt &gt;&gt; .bashrc
+
+步骤 3: 运行source .bashrc激活新的condasource ~/.bashrc
+
+这一步将加载新的bashrc配置，包括更新的conda路径。您应该会看到三行”Save your data in &#x2F;home&#x2F;bml&#x2F;storage directory !!!”的提示信息。
+步骤 4: 使用新conda中的环境新的conda路径被设置为/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/miniconda3/bin。您可以列出并使用新的conda环境：
+# 查看可用的conda环境conda env list# 激活特定环境（以&quot;myenv&quot;为例）conda activate myenv
+
+如果您想使用/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/envs/中的特定环境，可以这样操作：
+# 激活特定路径下的环境conda activate /home/bml/storage/mnt/v-7c231cc5f5054b0a/org/envs/环境名称
+
+完成这些步骤后，您的conda环境应该已经被重置并指向了新的路径。您可以通过which conda命令验证conda的路径是否正确更新。
+计算PSNR和SSIM的程序
+python evaluate.py –pred_dir &#x2F;home&#x2F;bml&#x2F;storage&#x2F;mnt&#x2F;v-7c231cc5f5054b0a&#x2F;org&#x2F;code&#x2F;sim_deblur_multi_system&#x2F;output_difftrain_1500 –gt_dir &#x2F;home&#x2F;bml&#x2F;storage&#x2F;mnt&#x2F;v-7c231cc5f5054b0a&#x2F;org&#x2F;code&#x2F;sim_deblur_multi_system&#x2F;Test_div100&#x2F;gt –ext png –pred_prefix deblur_
+ scp -p 15022 “0: downloadladdsr.zip” juegong@180.169.75.62:&#x2F;data2&#x2F;user&#x2F;juegong&#x2F;AddsR
+在 Linux 终端中使用 screen 是一种非常实用的方式来创建和管理多个会话，尤其适合远程连接、长期运行任务等场景。以下是创建和使用 screen 的基本操作：
+
+🔧 安装 screen（如果尚未安装）Debian&#x2F;Ubuntu 系：
+sudo apt updatesudo apt install screen
+
+Red Hat&#x2F;CentOS 系：
+sudo yum install screen
+
+
+🚀 创建新的 screen 会话screen -S 会话名称
+
+示例：
+screen -S mysession
+
+
+🧩 常用操作命令
+
+
+操作
+命令
+
+
+
+创建新会话
+screen -S 名称
+
+
+查看所有会话
+screen -ls
+
+
+恢复某个会话
+screen -r 名称或ID
+
+
+暂时离开（detach）当前会话
+Ctrl + A 然后按 D
+
+
+销毁会话
+在会话中输入 exit 或关闭终端窗口
+
+
+强制接管会话
+screen -d -r 名称或ID
+
+
+
+💡 提示
+多个 screen 会话可以并行存在。
+即使你退出终端，screen 中运行的程序依然会继续运行。
+进入 screen 后的命令操作与普通终端完全一致。
+
+
+如果你需要在 screen 里运行特定脚本或程序，也可以直接这样：
+screen -S mytask bash myscript.sh
+
+需要我帮你设置自动启动 screen 或写个脚本吗？
+在 Linux 终端中删除一个 Conda 环境，可以按照下面的步骤操作：
+
+🧹 删除 Conda 环境的命令conda remove --name 环境名 --all
+
+示例：
+conda remove --name myenv --all
+
+这条命令的含义是：移除名为 myenv 的 conda 环境中的 所有内容，并彻底删除该环境。
+
+🧾 查看已有的 Conda 环境如果你不确定环境的名称，可以先查看：
+conda env list
+
+或：
+conda info --envs
+
+输出会显示你所有的环境，当前活跃的环境前会有一个星号 * 标记。
+CUDA_VISIBLE_DEVICES=&quot;0,1,2,3,4,5,6,7,&quot; accelerate launch train_seesr.py \–pretrained_model_name_or_path&#x3D;”&#x2F;home&#x2F;bml&#x2F;storage&#x2F;mnt&#x2F;v-7c231cc5f5054b0a&#x2F;org&#x2F;checkpoint&#x2F;SeeSR&#x2F;stable-diffusion-2-base” –output_dir&#x3D;”.&#x2F;experience&#x2F;seesr1500” –root_folders ‘&#x2F;home&#x2F;bml&#x2F;storage&#x2F;mnt&#x2F;v-7c231cc5f5054b0a&#x2F;org&#x2F;code&#x2F;Multi_System&#x2F;train_6000’ –ram_ft_path ‘&#x2F;home&#x2F;bml&#x2F;storage&#x2F;mnt&#x2F;v-7c231cc5f5054b0a&#x2F;org&#x2F;code&#x2F;Multi_System&#x2F;SeeSR-main&#x2F;preset&#x2F;models&#x2F;DAPE.pth’ –enable_xformers_memory_efficient_attention –mixed_precision&#x3D;”fp16” –resolution&#x3D;512 –learning_rate&#x3D;5e-5 –train_batch_size&#x3D;16 –gradient_accumulation_steps&#x3D;2 –null_text_ratio&#x3D;0.5–dataloader_num_workers&#x3D;0 –checkpointing_steps&#x3D;10000
 ]]></content>
+      <categories>
+        <category>科研</category>
+      </categories>
+      <tags>
+        <tag>操作指南</tag>
+      </tags>
   </entry>
   <entry>
     <title>深度学习服务器操作指南</title>
@@ -127,5 +207,23 @@ chmod +x .git/hooks/pre-commit]]></content>
       <tags>
         <tag>操作指南</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2025/06/24/hello-world/</url>
+    <content><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
+Quick StartCreate a new post$ hexo new &quot;My New Post&quot;
+
+More info: Writing
+Run server$ hexo server
+
+More info: Server
+Generate static files$ hexo generate
+
+More info: Generating
+Deploy to remote sites$ hexo deploy
+
+More info: Deployment
+]]></content>
   </entry>
 </search>
