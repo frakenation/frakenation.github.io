@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>AI4S</title>
-    <url>/2025/06/26/AI4S/</url>
-    <content><![CDATA[目录
-]]></content>
-  </entry>
-  <entry>
     <title>Hello World</title>
     <url>/2025/06/24/hello-world/</url>
     <content><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
@@ -22,6 +16,12 @@ More info: Generating
 Deploy to remote sites$ hexo deploy
 
 More info: Deployment
+]]></content>
+  </entry>
+  <entry>
+    <title>AI4S</title>
+    <url>/2025/06/26/AI4S/</url>
+    <content><![CDATA[目录
 ]]></content>
   </entry>
   <entry>
@@ -121,5 +121,11 @@ source ~/.bashrc
 
 赋予执行权限：
 chmod +x .git/hooks/pre-commit]]></content>
+      <categories>
+        <category>科研</category>
+      </categories>
+      <tags>
+        <tag>操作指南</tag>
+      </tags>
   </entry>
 </search>
