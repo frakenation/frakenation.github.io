@@ -209,6 +209,24 @@ chmod +x .git/hooks/pre-commit]]></content>
       </tags>
   </entry>
   <entry>
+    <title>Hello World</title>
+    <url>/2025/06/24/hello-world/</url>
+    <content><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
+Quick StartCreate a new post$ hexo new &quot;My New Post&quot;
+
+More info: Writing
+Run server$ hexo server
+
+More info: Server
+Generate static files$ hexo generate
+
+More info: Generating
+Deploy to remote sites$ hexo deploy
+
+More info: Deployment
+]]></content>
+  </entry>
+  <entry>
     <title>StyID学习与提问</title>
     <url>/2025/06/26/StyID/</url>
     <content><![CDATA[Taming Transformers 的作用Taming Transformers 是 CompVis 团队开发的一个库，它包含了 VQ-GAN (Vector Quantized Generative Adversarial Network) 的实现。在 StyleID 项目中，它的主要作用有：
@@ -364,24 +382,6 @@ temperature scaling
       <tags>
         <tag>论文阅读</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>Hello World</title>
-    <url>/2025/06/24/hello-world/</url>
-    <content><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
-Quick StartCreate a new post$ hexo new &quot;My New Post&quot;
-
-More info: Writing
-Run server$ hexo server
-
-More info: Server
-Generate static files$ hexo generate
-
-More info: Generating
-Deploy to remote sites$ hexo deploy
-
-More info: Deployment
-]]></content>
   </entry>
   <entry>
     <title>关于DDPM的一些疑惑</title>
