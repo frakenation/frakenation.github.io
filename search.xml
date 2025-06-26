@@ -209,24 +209,6 @@ chmod +x .git/hooks/pre-commit]]></content>
       </tags>
   </entry>
   <entry>
-    <title>Hello World</title>
-    <url>/2025/06/24/hello-world/</url>
-    <content><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
-Quick StartCreate a new post$ hexo new &quot;My New Post&quot;
-
-More info: Writing
-Run server$ hexo server
-
-More info: Server
-Generate static files$ hexo generate
-
-More info: Generating
-Deploy to remote sites$ hexo deploy
-
-More info: Deployment
-]]></content>
-  </entry>
-  <entry>
     <title>StyID学习与提问</title>
     <url>/2025/06/26/StyID/</url>
     <content><![CDATA[Taming Transformers 的作用Taming Transformers 是 CompVis 团队开发的一个库，它包含了 VQ-GAN (Vector Quantized Generative Adversarial Network) 的实现。在 StyleID 项目中，它的主要作用有：
@@ -385,11 +367,9 @@ temperature scaling
   </entry>
   <entry>
     <title>关于DDPM的一些疑惑</title>
-    <url>/2025/06/26/%E5%85%B3%E4%BA%8EDDPM%E7%9A%84%E4%B8%80%E4%BA%9B%E7%96%91%E6%83%91%201b2b1b94154c8054a2f9c157b9d75165/%E5%85%B3%E4%BA%8EDDPM%E7%9A%84%E4%B8%80%E4%BA%9B%E7%96%91%E6%83%91/</url>
+    <url>/2025/06/26/%E5%85%B3%E4%BA%8EDDPM%E7%9A%84%E4%B8%80%E4%BA%9B%E7%96%91%E6%83%91/</url>
     <content><![CDATA[在DDPM当中，也存在着一个类似于VAE的ELBO，我们需要优化他，表现为：
-![image 1](屏幕截图 2025-03-10 161953.png)
-
-
+![图片](屏幕截图 2025-03-10 161953.png)
 其中给关于最后一项的优化我在这里在此复述一下思路：下面的q首先需要拿贝叶斯公式进行推导（因为是反向的，x_0不可以去掉）：
 
 因此我们可以完全写出正态分布函数的参数：
@@ -412,5 +392,23 @@ t值嵌入
       <tags>
         <tag>知识积累</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2025/06/24/hello-world/</url>
+    <content><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
+Quick StartCreate a new post$ hexo new &quot;My New Post&quot;
+
+More info: Writing
+Run server$ hexo server
+
+More info: Server
+Generate static files$ hexo generate
+
+More info: Generating
+Deploy to remote sites$ hexo deploy
+
+More info: Deployment
+]]></content>
   </entry>
 </search>
