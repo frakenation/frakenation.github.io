@@ -95,6 +95,80 @@ CUDA_VISIBLE_DEVICES=&quot;0,1,2,3,4,5,6,7,&quot; accelerate launch train_seesr.
       </tags>
   </entry>
   <entry>
+    <title>深度学习服务器操作指南</title>
+    <url>/2025/06/26/DL-safari/</url>
+    <content><![CDATA[目录
+Conda环境配置
+Linux终端操作
+Screen操作
+环境变量设置
+Git相关操作
+
+1. Conda环境配置1.1 安装Miniconda# 下载Miniconda安装脚本wget https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-latest-Linux-x86_64.sh# 赋予执行权限chmod +x Miniconda3-latest-Linux-x86_64.sh# 运行安装脚本./Miniconda3-latest-Linux-x86_64.sh
+安装过程中按提示操作，建议接受默认安装位置并选择初始化conda。
+1.2 配置Conda镜像源创建或修改~/.condarc文件：
+nano ~/.condarc
+添加以下内容（使用清华镜像源）：
+channels:  - defaultsshow_channel_urls: truedefault_channels:  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2custom_channels:  conda-forge: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud  pytorch: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
+1.3 创建与管理环境# 创建新环境conda create -n iqa-env python=3.8# 激活环境conda activate myenv# 安装包conda install numpy scipy pandas# 列出已安装的包conda list# 安装pip包pip install transformers# 克隆环境conda create -n newenv --clone myenv# 导出环境conda env export &gt; environment.yml# 从配置文件创建环境conda env create -f environment.yml# 删除环境conda remove -n myenv --all# 退出当前环境conda deactivate
+1.4 PyTorch安装（使用国内镜像）# 安装支持CUDA的PyTorchconda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia# 或者使用pip安装（建议使用清华镜像）pip install torch torchvision torchaudio -i https://pypi.tuna.tsinghua.edu.cn/simple
+2. Linux终端操作2.1 基本文件操作# 列出文件和目录lsls -l  # 详细信息ls -a  # 显示隐藏文件ls -lh # 以人类可读格式显示文件大小# 创建目录mkdir dirnamemkdir -p path/to/nested/dir  # 创建嵌套目录# 复制文件或目录cp source destinationcp -r sourcedir destdir  # 递归复制目录及其内容# 移动或重命名文件/目录mv source destination# 删除文件rm filenamerm -f filename  # 强制删除，不提示# 删除目录rm -r dirname   # 递归删除rm -rf dirname  # 强制递归删除（谨慎使用）# 查看文件内容cat filename    # 显示全部内容less filename   # 分页显示head filename   # 显示前10行tail filename   # 显示后10行tail -f logfile # 实时查看日志文件更新for file in AAA_*; do    mv &quot;$file&quot; &quot;$&#123;file#AAA_&#125;&quot;done  #去除所有以AAA开头的文件find . -maxdepth 1 -type d -name &quot;checkpoint-*&quot; | while read dir; do  num=$(echo &quot;$dir&quot; | sed &#x27;s/.*checkpoint-//&#x27;)  if [[ $num =~ ^[0-9]+$ ]] &amp;&amp; [ $num -lt 47000 ]; then    rm -rf &quot;$dir&quot;    echo &quot;删除了: $dir&quot;  fidone
+2.2 文件权限管理# 修改文件权限chmod 755 filename  # rwxr-xr-xchmod +x filename   # 添加执行权限chmod -R 755 dirname # 递归修改目录权限# 修改文件所有者chown user:group filenamechown -R user:group dirname # 递归修改目录所有权
+2.3 文件查找# 按名称查找find /path -name &quot;filename&quot;find . -name &quot;*.py&quot;  # 查找当前目录下所有Python文件# 按类型查找find /path -type f  # 只查找文件find /path -type d  # 只查找目录# 按大小查找find /path -size +100M  # 查找大于100MB的文件# 按修改时间查找find /path -mtime -7  # 查找7天内修改的文件
+2.4 文件压缩与解压# tar格式tar -cvf archive.tar files/  # 创建tar归档tar -xvf archive.tar         # 解压tar归档tar -tvf archive.tar         # 查看内容不解压# tar.gz格式tar -czvf archive.tar.gz files/  # 创建tar.gz压缩包tar -xzvf archive.tar.gz         # 解压tar.gz# tar.bz2格式tar -cjvf archive.tar.bz2 files/ # 创建tar.bz2压缩包tar -xjvf archive.tar.bz2        # 解压tar.bz2# zip格式zip -r archive.zip files/        # 创建zip压缩包unzip archive.zip                # 解压zipunzip -l archive.zip             # 查看内容不解压
+2.5 远程文件传输(SCP)# 从本地复制到远程scp localfile user@remote_host:/remote/path/# 从远程复制到本地scp user@remote_host:/remote/path/file localpath/# 复制目录（加-r参数）scp -r localdir user@remote_host:/remote/path/scp -r user@remote_host:/remote/path/dir localpath/# 指定端口scp -P 2222 localfile user@remote_host:/remote/path/# 通过跳板机传输scp -o &quot;ProxyJump user1@jumphost&quot; localfile user2@destination:/path/
+2.6 磁盘与系统监控# 查看磁盘使用情况df -h# 查看目录大小du -sh /pathdu -h --max-depth=1 /path  # 只显示直接子目录大小# 查看系统资源top         # 实时系统状态htop        # 更友好的top替代品free -h     # 内存使用情况nvidia-smi  # GPU状态和使用情况watch -n 1 nvidia-smi  # 每秒更新一次GPU状态
+3. Screen操作Screen是一个终端多路复用器，允许你在一个终端会话中使用多个窗口，即使断开连接，程序也能继续运行。
+3.1 基本使用# 安装screen（如果尚未安装）sudo apt-get install screen# 创建新的screen会话screen# 创建命名会话screen -S session_name# 分离当前会话（不终止会话中运行的程序）# 使用快捷键：Ctrl+a 然后按 d# 列出所有会话screen -ls# 重新连接到会话screen -r session_idscreen -r session_name  # 如果之前命名了会话# 如果会话显示为Attachedscreen -d -r session_id  # 先分离再连接# 终止当前会话exit  # 或者 Ctrl+d
+3.2 Screen快捷键所有Screen快捷键都以Ctrl+a为前缀，然后按下对应的功能键：
+
+Ctrl+a c - 创建新窗口
+Ctrl+a n - 切换到下一个窗口
+Ctrl+a p - 切换到上一个窗口
+Ctrl+a &quot; - 显示所有窗口列表
+Ctrl+a A - 重命名当前窗口
+Ctrl+a d - 分离当前会话
+Ctrl+a k - 杀死当前窗口
+Ctrl+a S - 水平分割当前窗口
+Ctrl+a | - 垂直分割当前窗口
+Ctrl+a Tab - 在分割窗口间切换
+Ctrl+a ? - 显示帮助
+
+3.3 技巧与最佳实践# 配置文件（〜/.screenrc）示例echo &quot;startup_message off&quot; &gt;&gt; ~/.screenrc  # 禁用启动消息echo &quot;defscrollback 10000&quot; &gt;&gt; ~/.screenrc  # 增加历史记录# 在后台启动程序screen -dmS train_model bash -c &quot;cd /path/to/project &amp;&amp; python train.py&quot;# 记录screen输出到文件screen -L -Logfile train_output.log -dmS train_model bash -c &quot;python train.py&quot;
+4. 环境变量设置4.1 临时环境变量# 设置临时环境变量（当前会话有效）export VARIABLE_NAME=value# 查看环境变量echo $VARIABLE_NAMEenv | grep VARIABLE_NAME
+4.2 永久环境变量编辑~/.bashrc或~/.zshrc（取决于你使用的shell）：
+nano ~/.bashrc
+添加以下内容：
+# 添加路径到PATH变量export PATH=$PATH:/path/to/add# 设置其他环境变量export VARIABLE_NAME=value
+使修改生效：
+source ~/.bashrc
+4.3 设置PyTorch相关环境变量# 使用国内PyTorch镜像源export TORCH_HOME=$HOME/.cache/torchexport PYTORCH_PRETRAINED_BERT_CACHE=$HOME/.cache/torch/transformers# 禁用并行光栅化以减少内存使用（某些情况下有用）export PYTORCH_DISABLE_RASTERIZE=1# 设置CUDA可见设备export CUDA_VISIBLE_DEVICES=0,1  # 只使用GPU 0和1
+4.4 设置Hugging Face相关环境变量# 设置Hugging Face缓存目录export HF_HOME=$HOME/.cache/huggingfaceexport TRANSFORMERS_CACHE=$HOME/.cache/huggingface/transformersexport DATASETS_CACHE=$HOME/.cache/huggingface/datasetsexport HF_DATASETS_CACHE=$HOME/.cache/huggingface/datasets# 使用国内镜像下载模型export HF_ENDPOINT=https://hf-mirror.com# 或者：# export HF_ENDPOINT=https://huggingface.tsinghua.edu.cn
+4.5 其他常用环境变量# 增加Python路径export PYTHONPATH=$PYTHONPATH:/path/to/your/project# 设置代理export http_proxy=http://proxy.example.com:portexport https_proxy=http://proxy.example.com:portexport all_proxy=socks5://proxy.example.com:port# 禁用代理unset http_proxy https_proxy all_proxy
+5. Git相关操作5.1 Git配置# 设置用户信息git config --global user.name &quot;Your Name&quot;git config --global user.email &quot;your.email@example.com&quot;# 设置默认编辑器git config --global core.editor vim# 设置git使用https而非git协议git config --global url.&quot;https://&quot;.insteadOf git://# 查看所有配置git config --list
+5.2 Git代理设置# 为Github设置代理git config --global http.https://github.com.proxy http://proxy.example.com:portgit config --global https.https://github.com.proxy http://proxy.example.com:port# 取消代理git config --global --unset http.https://github.com.proxygit config --global --unset https.https://github.com.proxy
+5.3 基本Git操作# 初始化仓库git init# 克隆仓库git clone https://github.com/username/repo.gitgit clone https://github.com/username/repo.git --depth 1  # 浅克隆（只获取最新版本）# 添加文件到暂存区git add filenamegit add .  # 添加所有修改# 提交更改git commit -m &quot;Commit message&quot;git commit -a -m &quot;Commit message&quot;  # 添加所有已修改文件并提交# 查看状态git status# 查看差异git diffgit diff --staged  # 查看已暂存的差异# 查看提交历史git loggit log --oneline  # 简洁模式git log --graph    # 图形化显示分支和合并历史
+5.4 分支操作# 查看分支git branch# 创建分支git branch branch_name# 切换分支git checkout branch_name# 或使用新语法git switch branch_name# 创建并切换到新分支git checkout -b new_branch# 或使用新语法git switch -c new_branch# 合并分支git merge branch_name# 删除分支git branch -d branch_name  # 安全删除git branch -D branch_name  # 强制删除
+5.5 远程仓库操作# 添加远程仓库git remote add origin https://github.com/username/repo.git# 查看远程仓库git remote -v# 从远程获取更新git fetch origin# 拉取更新并合并git pull origin branch_name# 推送到远程仓库git push origin branch_name# 设置默认上游分支git push -u origin branch_name  # 之后可直接使用git push
+5.6 Git高级操作# 暂存当前修改git stashgit stash save &quot;stash message&quot;# 查看暂存列表git stash list# 应用暂存git stash apply  # 应用最近的暂存但不删除git stash pop    # 应用最近的暂存并删除git stash apply stash@&#123;n&#125;  # 应用特定的暂存# 丢弃暂存git stash dropgit stash drop stash@&#123;n&#125;# 清除所有暂存git stash clear# 重置修改git reset HEAD filename  # 取消暂存但保留工作区修改git reset --hard HEAD    # 重置暂存区和工作区到最新提交# 回退到特定提交git reset --hard commit_hash# 生成补丁git format-patch -1 HEAD  # 最新提交的补丁git format-patch -n HEAD  # 最新n个提交的补丁# 应用补丁git apply patch_filegit am patch_file  # 应用并创建提交
+5.7 Git LFS (Large File Storage)用于大文件存储，如模型权重文件：
+# 安装Git LFSsudo apt-get install git-lfsgit lfs install# 跟踪大文件git lfs track &quot;*.weights&quot;  # 跟踪所有.weights文件git lfs track &quot;models/*&quot;   # 跟踪models目录下所有文件# 确保.gitattributes被提交git add .gitattributesgit commit -m &quot;Track large files with Git LFS&quot;# 常规操作同普通Gitgit add large_file.weightsgit commit -m &quot;Add model weights&quot;git push origin main
+5.8 配置国内Git镜像针对GitHub访问慢的问题，可使用以下镜像：
+# 使用镜像加速克隆git clone https://github.com.cnpmjs.org/username/repo.git# 或git clone https://ghproxy.com/https://github.com/username/repo.git# 修改已克隆仓库的远程URLgit remote set-url origin https://github.com.cnpmjs.org/username/repo.git
+5.9 Git HooksGit钩子可以在特定Git事件发生时执行自定义脚本：
+# 创建预提交钩子（在.git/hooks目录下）nano .git/hooks/pre-commit
+示例pre-commit钩子（检查Python语法）:
+#!/bin/bashfor file in $(git diff --cached --name-only | grep &#x27;\.py$&#x27;)do    python -m py_compile $file    if [ $? -ne 0 ]; then        echo &quot;Syntax error in $file&quot;        exit 1    fidone
+赋予执行权限：
+chmod +x .git/hooks/pre-commit]]></content>
+      <categories>
+        <category>科研</category>
+      </categories>
+      <tags>
+        <tag>操作指南</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>StyID学习与提问</title>
     <url>/2025/06/26/StyID/</url>
     <content><![CDATA[Taming Transformers 的作用Taming Transformers 是 CompVis 团队开发的一个库，它包含了 VQ-GAN (Vector Quantized Generative Adversarial Network) 的实现。在 StyleID 项目中，它的主要作用有：
@@ -244,80 +318,6 @@ temperature scaling
       </tags>
   </entry>
   <entry>
-    <title>深度学习服务器操作指南</title>
-    <url>/2025/06/26/DL-safari/</url>
-    <content><![CDATA[目录
-Conda环境配置
-Linux终端操作
-Screen操作
-环境变量设置
-Git相关操作
-
-1. Conda环境配置1.1 安装Miniconda# 下载Miniconda安装脚本wget https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-latest-Linux-x86_64.sh# 赋予执行权限chmod +x Miniconda3-latest-Linux-x86_64.sh# 运行安装脚本./Miniconda3-latest-Linux-x86_64.sh
-安装过程中按提示操作，建议接受默认安装位置并选择初始化conda。
-1.2 配置Conda镜像源创建或修改~/.condarc文件：
-nano ~/.condarc
-添加以下内容（使用清华镜像源）：
-channels:  - defaultsshow_channel_urls: truedefault_channels:  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2custom_channels:  conda-forge: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud  pytorch: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
-1.3 创建与管理环境# 创建新环境conda create -n iqa-env python=3.8# 激活环境conda activate myenv# 安装包conda install numpy scipy pandas# 列出已安装的包conda list# 安装pip包pip install transformers# 克隆环境conda create -n newenv --clone myenv# 导出环境conda env export &gt; environment.yml# 从配置文件创建环境conda env create -f environment.yml# 删除环境conda remove -n myenv --all# 退出当前环境conda deactivate
-1.4 PyTorch安装（使用国内镜像）# 安装支持CUDA的PyTorchconda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia# 或者使用pip安装（建议使用清华镜像）pip install torch torchvision torchaudio -i https://pypi.tuna.tsinghua.edu.cn/simple
-2. Linux终端操作2.1 基本文件操作# 列出文件和目录lsls -l  # 详细信息ls -a  # 显示隐藏文件ls -lh # 以人类可读格式显示文件大小# 创建目录mkdir dirnamemkdir -p path/to/nested/dir  # 创建嵌套目录# 复制文件或目录cp source destinationcp -r sourcedir destdir  # 递归复制目录及其内容# 移动或重命名文件/目录mv source destination# 删除文件rm filenamerm -f filename  # 强制删除，不提示# 删除目录rm -r dirname   # 递归删除rm -rf dirname  # 强制递归删除（谨慎使用）# 查看文件内容cat filename    # 显示全部内容less filename   # 分页显示head filename   # 显示前10行tail filename   # 显示后10行tail -f logfile # 实时查看日志文件更新for file in AAA_*; do    mv &quot;$file&quot; &quot;$&#123;file#AAA_&#125;&quot;done  #去除所有以AAA开头的文件find . -maxdepth 1 -type d -name &quot;checkpoint-*&quot; | while read dir; do  num=$(echo &quot;$dir&quot; | sed &#x27;s/.*checkpoint-//&#x27;)  if [[ $num =~ ^[0-9]+$ ]] &amp;&amp; [ $num -lt 47000 ]; then    rm -rf &quot;$dir&quot;    echo &quot;删除了: $dir&quot;  fidone
-2.2 文件权限管理# 修改文件权限chmod 755 filename  # rwxr-xr-xchmod +x filename   # 添加执行权限chmod -R 755 dirname # 递归修改目录权限# 修改文件所有者chown user:group filenamechown -R user:group dirname # 递归修改目录所有权
-2.3 文件查找# 按名称查找find /path -name &quot;filename&quot;find . -name &quot;*.py&quot;  # 查找当前目录下所有Python文件# 按类型查找find /path -type f  # 只查找文件find /path -type d  # 只查找目录# 按大小查找find /path -size +100M  # 查找大于100MB的文件# 按修改时间查找find /path -mtime -7  # 查找7天内修改的文件
-2.4 文件压缩与解压# tar格式tar -cvf archive.tar files/  # 创建tar归档tar -xvf archive.tar         # 解压tar归档tar -tvf archive.tar         # 查看内容不解压# tar.gz格式tar -czvf archive.tar.gz files/  # 创建tar.gz压缩包tar -xzvf archive.tar.gz         # 解压tar.gz# tar.bz2格式tar -cjvf archive.tar.bz2 files/ # 创建tar.bz2压缩包tar -xjvf archive.tar.bz2        # 解压tar.bz2# zip格式zip -r archive.zip files/        # 创建zip压缩包unzip archive.zip                # 解压zipunzip -l archive.zip             # 查看内容不解压
-2.5 远程文件传输(SCP)# 从本地复制到远程scp localfile user@remote_host:/remote/path/# 从远程复制到本地scp user@remote_host:/remote/path/file localpath/# 复制目录（加-r参数）scp -r localdir user@remote_host:/remote/path/scp -r user@remote_host:/remote/path/dir localpath/# 指定端口scp -P 2222 localfile user@remote_host:/remote/path/# 通过跳板机传输scp -o &quot;ProxyJump user1@jumphost&quot; localfile user2@destination:/path/
-2.6 磁盘与系统监控# 查看磁盘使用情况df -h# 查看目录大小du -sh /pathdu -h --max-depth=1 /path  # 只显示直接子目录大小# 查看系统资源top         # 实时系统状态htop        # 更友好的top替代品free -h     # 内存使用情况nvidia-smi  # GPU状态和使用情况watch -n 1 nvidia-smi  # 每秒更新一次GPU状态
-3. Screen操作Screen是一个终端多路复用器，允许你在一个终端会话中使用多个窗口，即使断开连接，程序也能继续运行。
-3.1 基本使用# 安装screen（如果尚未安装）sudo apt-get install screen# 创建新的screen会话screen# 创建命名会话screen -S session_name# 分离当前会话（不终止会话中运行的程序）# 使用快捷键：Ctrl+a 然后按 d# 列出所有会话screen -ls# 重新连接到会话screen -r session_idscreen -r session_name  # 如果之前命名了会话# 如果会话显示为Attachedscreen -d -r session_id  # 先分离再连接# 终止当前会话exit  # 或者 Ctrl+d
-3.2 Screen快捷键所有Screen快捷键都以Ctrl+a为前缀，然后按下对应的功能键：
-
-Ctrl+a c - 创建新窗口
-Ctrl+a n - 切换到下一个窗口
-Ctrl+a p - 切换到上一个窗口
-Ctrl+a &quot; - 显示所有窗口列表
-Ctrl+a A - 重命名当前窗口
-Ctrl+a d - 分离当前会话
-Ctrl+a k - 杀死当前窗口
-Ctrl+a S - 水平分割当前窗口
-Ctrl+a | - 垂直分割当前窗口
-Ctrl+a Tab - 在分割窗口间切换
-Ctrl+a ? - 显示帮助
-
-3.3 技巧与最佳实践# 配置文件（〜/.screenrc）示例echo &quot;startup_message off&quot; &gt;&gt; ~/.screenrc  # 禁用启动消息echo &quot;defscrollback 10000&quot; &gt;&gt; ~/.screenrc  # 增加历史记录# 在后台启动程序screen -dmS train_model bash -c &quot;cd /path/to/project &amp;&amp; python train.py&quot;# 记录screen输出到文件screen -L -Logfile train_output.log -dmS train_model bash -c &quot;python train.py&quot;
-4. 环境变量设置4.1 临时环境变量# 设置临时环境变量（当前会话有效）export VARIABLE_NAME=value# 查看环境变量echo $VARIABLE_NAMEenv | grep VARIABLE_NAME
-4.2 永久环境变量编辑~/.bashrc或~/.zshrc（取决于你使用的shell）：
-nano ~/.bashrc
-添加以下内容：
-# 添加路径到PATH变量export PATH=$PATH:/path/to/add# 设置其他环境变量export VARIABLE_NAME=value
-使修改生效：
-source ~/.bashrc
-4.3 设置PyTorch相关环境变量# 使用国内PyTorch镜像源export TORCH_HOME=$HOME/.cache/torchexport PYTORCH_PRETRAINED_BERT_CACHE=$HOME/.cache/torch/transformers# 禁用并行光栅化以减少内存使用（某些情况下有用）export PYTORCH_DISABLE_RASTERIZE=1# 设置CUDA可见设备export CUDA_VISIBLE_DEVICES=0,1  # 只使用GPU 0和1
-4.4 设置Hugging Face相关环境变量# 设置Hugging Face缓存目录export HF_HOME=$HOME/.cache/huggingfaceexport TRANSFORMERS_CACHE=$HOME/.cache/huggingface/transformersexport DATASETS_CACHE=$HOME/.cache/huggingface/datasetsexport HF_DATASETS_CACHE=$HOME/.cache/huggingface/datasets# 使用国内镜像下载模型export HF_ENDPOINT=https://hf-mirror.com# 或者：# export HF_ENDPOINT=https://huggingface.tsinghua.edu.cn
-4.5 其他常用环境变量# 增加Python路径export PYTHONPATH=$PYTHONPATH:/path/to/your/project# 设置代理export http_proxy=http://proxy.example.com:portexport https_proxy=http://proxy.example.com:portexport all_proxy=socks5://proxy.example.com:port# 禁用代理unset http_proxy https_proxy all_proxy
-5. Git相关操作5.1 Git配置# 设置用户信息git config --global user.name &quot;Your Name&quot;git config --global user.email &quot;your.email@example.com&quot;# 设置默认编辑器git config --global core.editor vim# 设置git使用https而非git协议git config --global url.&quot;https://&quot;.insteadOf git://# 查看所有配置git config --list
-5.2 Git代理设置# 为Github设置代理git config --global http.https://github.com.proxy http://proxy.example.com:portgit config --global https.https://github.com.proxy http://proxy.example.com:port# 取消代理git config --global --unset http.https://github.com.proxygit config --global --unset https.https://github.com.proxy
-5.3 基本Git操作# 初始化仓库git init# 克隆仓库git clone https://github.com/username/repo.gitgit clone https://github.com/username/repo.git --depth 1  # 浅克隆（只获取最新版本）# 添加文件到暂存区git add filenamegit add .  # 添加所有修改# 提交更改git commit -m &quot;Commit message&quot;git commit -a -m &quot;Commit message&quot;  # 添加所有已修改文件并提交# 查看状态git status# 查看差异git diffgit diff --staged  # 查看已暂存的差异# 查看提交历史git loggit log --oneline  # 简洁模式git log --graph    # 图形化显示分支和合并历史
-5.4 分支操作# 查看分支git branch# 创建分支git branch branch_name# 切换分支git checkout branch_name# 或使用新语法git switch branch_name# 创建并切换到新分支git checkout -b new_branch# 或使用新语法git switch -c new_branch# 合并分支git merge branch_name# 删除分支git branch -d branch_name  # 安全删除git branch -D branch_name  # 强制删除
-5.5 远程仓库操作# 添加远程仓库git remote add origin https://github.com/username/repo.git# 查看远程仓库git remote -v# 从远程获取更新git fetch origin# 拉取更新并合并git pull origin branch_name# 推送到远程仓库git push origin branch_name# 设置默认上游分支git push -u origin branch_name  # 之后可直接使用git push
-5.6 Git高级操作# 暂存当前修改git stashgit stash save &quot;stash message&quot;# 查看暂存列表git stash list# 应用暂存git stash apply  # 应用最近的暂存但不删除git stash pop    # 应用最近的暂存并删除git stash apply stash@&#123;n&#125;  # 应用特定的暂存# 丢弃暂存git stash dropgit stash drop stash@&#123;n&#125;# 清除所有暂存git stash clear# 重置修改git reset HEAD filename  # 取消暂存但保留工作区修改git reset --hard HEAD    # 重置暂存区和工作区到最新提交# 回退到特定提交git reset --hard commit_hash# 生成补丁git format-patch -1 HEAD  # 最新提交的补丁git format-patch -n HEAD  # 最新n个提交的补丁# 应用补丁git apply patch_filegit am patch_file  # 应用并创建提交
-5.7 Git LFS (Large File Storage)用于大文件存储，如模型权重文件：
-# 安装Git LFSsudo apt-get install git-lfsgit lfs install# 跟踪大文件git lfs track &quot;*.weights&quot;  # 跟踪所有.weights文件git lfs track &quot;models/*&quot;   # 跟踪models目录下所有文件# 确保.gitattributes被提交git add .gitattributesgit commit -m &quot;Track large files with Git LFS&quot;# 常规操作同普通Gitgit add large_file.weightsgit commit -m &quot;Add model weights&quot;git push origin main
-5.8 配置国内Git镜像针对GitHub访问慢的问题，可使用以下镜像：
-# 使用镜像加速克隆git clone https://github.com.cnpmjs.org/username/repo.git# 或git clone https://ghproxy.com/https://github.com/username/repo.git# 修改已克隆仓库的远程URLgit remote set-url origin https://github.com.cnpmjs.org/username/repo.git
-5.9 Git HooksGit钩子可以在特定Git事件发生时执行自定义脚本：
-# 创建预提交钩子（在.git/hooks目录下）nano .git/hooks/pre-commit
-示例pre-commit钩子（检查Python语法）:
-#!/bin/bashfor file in $(git diff --cached --name-only | grep &#x27;\.py$&#x27;)do    python -m py_compile $file    if [ $? -ne 0 ]; then        echo &quot;Syntax error in $file&quot;        exit 1    fidone
-赋予执行权限：
-chmod +x .git/hooks/pre-commit]]></content>
-      <categories>
-        <category>科研</category>
-      </categories>
-      <tags>
-        <tag>操作指南</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>TSD-SR阅读笔记</title>
     <url>/2025/06/30/TSD-SR%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/</url>
     <content><![CDATA[论文阅读笔记：《TSD-SR: One-Step Diffusion with Target Score Distillation for Real-World Image Super-Resolution》
@@ -335,7 +335,8 @@ chmod +x .git/hooks/pre-commit]]></content>
 方法 (Methodology)为了解决上述问题，TSD-SR引入了两个核心组件：TSD Loss 和 DASM。
 1. TSD Loss (目标分数蒸馏损失)TSD Loss是一种为学生模型提供稳定可靠梯度的组合损失函数。其目的是在VSD的基础上，引入一个更可靠的监督信号来指导优化。
 其梯度公式如下：
-(\nabla_{\theta}\mathcal{L}_{TSD}(\hat{z},z,c_{y})=\mathbb{E}_{t,\epsilon}[w(t)[\epsilon_{\psi}(\hat{z}_{t};t,c_{y}) - \epsilon_{\psi}(z_{t};t,c_{y}) + \lambda(\epsilon_{\psi}(z_{t};t,c_{y}) - \epsilon_{\phi}(\hat{z}_{t};t,c_{y}))]\frac{\partial\hat{z}}{\partial\theta}])这个损失由两部分构成：
+
+\nabla_{\theta}\mathcal{L}_{TSD}(\hat{z},z,c_{y})=\mathbb{E}_{t,\epsilon}[w(t)[\epsilon_{\psi}(\hat{z}_{t};t,c_{y}) - \epsilon_{\psi}(z_{t};t,c_{y}) + \lambda(\epsilon_{\psi}(z_{t};t,c_{y}) - \epsilon_{\phi}(\hat{z}_{t};t,c_{y}))]\frac{\partial\hat{z}}{\partial\theta}]这个损失由两部分构成：
 
 目标分数匹配 (TSM): $\epsilon{\psi}(\hat{z}{t};t,c{y}) - \epsilon{\psi}(z{t};t,c{y})$
 
@@ -356,13 +357,14 @@ chmod +x .git/hooks/pre-commit]]></content>
 
 结构与流程：
 DASM首先像常规方法一样，通过加噪得到一个初始的含噪样本 。
-接着，它不再止步于此，而是利用LoRA模型($\epsilon{\phi}进行多步迭代式的微型去噪，从而生成一系列沿着真实扩散采样轨迹的含噪样本\hat{z}{t-1}, \hat{z}_{t-2}, \dots$)。
+接着，它不再止步于此，而是利用LoRA模型($\epsilon{\phi}进行多步迭代式的微型去噪，从而生成一系列沿着真实扩散采样轨迹的含噪样本\hat{z}{t-1}, \hat{z}_{t-2}, \dots$。
 在一次训练迭代中，所有这些由DASM生成的样本都会被用来计算TSD损失，并将它们的梯度累积起来，共同更新学生模型。
 
 
-优势：通过这种方式，DASM在一次迭代中就强化了对细节恢复至关重要的早期时间步的学习，使得梯度能够更集中地用于优化细节生成，有效提升了图像的清晰度和真实感。训练与推理 (Training and Inference)
+优势：通过这种方式，DASM在一次迭代中就强化了对细节恢复至关重要的早期时间步的学习，使得梯度能够更集中地用于优化细节生成，有效提升了图像的清晰度和真实感。
 
-训练策略模型的训练是一个知识蒸馏过程，交替更新两个主要部分：
+
+训练与推理 (Training and Inference)训练策略模型的训练是一个知识蒸馏过程，交替更新两个主要部分：
 
 学生模型 () 的更新：
 
