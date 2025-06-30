@@ -345,7 +345,7 @@ temperature scaling
 
 变分分数蒸馏 (VSD): $\lambda(\epsilon{\psi}(z{t};t,c{y}) - \epsilon{\phi}(\hat{z}{t};t,c{y}))$
 
-作用：该项是经典VSD的变体，旨在将教师模型($\epsilon{\psi}的知识蒸馏给可训练的模型\epsilon{\phi}$)，促使学生模型的分布向教师模型看齐。
+作用：该项是经典VSD的变体，旨在将教师模型 $\epsilon{\psi}的知识蒸馏给可训练的模型\epsilon{\phi}$ ，促使学生模型的分布向教师模型看齐。
 
 
 
@@ -357,7 +357,7 @@ temperature scaling
 
 结构与流程：
 DASM首先像常规方法一样，通过加噪得到一个初始的含噪样本 。
-接着，它不再止步于此，而是利用LoRA模型($\epsilon{\phi}进行多步迭代式的微型去噪，从而生成一系列沿着真实扩散采样轨迹的含噪样本\hat{z}{t-1}, \hat{z}_{t-2}, \dots$。
+接着，它不再止步于此，而是利用LoRA模型 $\epsilon{\phi}进行多步迭代式的微型去噪，从而生成一系列沿着真实扩散采样轨迹的含噪样本\hat{z}{t-1}, \hat{z}_{t-2}, \dots$ 。
 在一次训练迭代中，所有这些由DASM生成的样本都会被用来计算TSD损失，并将它们的梯度累积起来，共同更新学生模型。
 
 
