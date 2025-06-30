@@ -3,27 +3,45 @@
   <entry>
     <title>AI4S平台操作指南</title>
     <url>/2025/06/26/AI4S/</url>
-    <content><![CDATA[步骤 1: 删除 .conda 和 .condarc 目录cd ~rm -rf .conda .condarc
-步骤 2: 使用bashrc_backup.txt替换原始.bashrc文件首先，我们需要从第117行开始替换您的.bashrc文件。查看您提供的文件，第117行开始的内容是conda初始化部分：
+    <content><![CDATA[步骤 1: 删除 .conda 和
+.condarc 目录
+cd ~rm -rf .conda .condarc
+步骤 2:
+使用bashrc_backup.txt替换原始.bashrc文件
+首先，我们需要从第117行开始替换您的.bashrc文件。查看您提供的文件，第117行开始的内容是conda初始化部分：
 cd ~# 先备份原始.bashrccp .bashrc .bashrc.old# 保留原始.bashrc的前116行head -n 116 .bashrc.old &gt; .bashrc# 从bashrc_backup.txt的第117行开始追加到.bashrctail -n +117 /home/bml/storage/mnt/v-7c231cc5f5054b0a/org/envs/bashrc_backup.txt &gt;&gt; .bashrc
-步骤 3: 运行source .bashrc激活新的condasource ~/.bashrc
-这一步将加载新的bashrc配置，包括更新的conda路径。您应该会看到三行”Save your data in /home/bml/storage directory !!!”的提示信息。
-步骤 4: 使用新conda中的环境新的conda路径被设置为/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/miniconda3/bin。您可以列出并使用新的conda环境：
+步骤 3: 运行source
+.bashrc激活新的conda
+source ~/.bashrc
+这一步将加载新的bashrc配置，包括更新的conda路径。您应该会看到三行”Save
+your data in /home/bml/storage directory !!!“的提示信息。
+步骤 4: 使用新conda中的环境
+新的conda路径被设置为/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/miniconda3/bin。您可以列出并使用新的conda环境：
 # 查看可用的conda环境conda env list# 激活特定环境（以&quot;myenv&quot;为例）conda activate myenv
 如果您想使用/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/envs/中的特定环境，可以这样操作：
 # 激活特定路径下的环境conda activate /home/bml/storage/mnt/v-7c231cc5f5054b0a/org/envs/环境名称
 完成这些步骤后，您的conda环境应该已经被重置并指向了新的路径。您可以通过which conda命令验证conda的路径是否正确更新。
 计算PSNR和SSIM的程序
-python evaluate.py \—preddir /home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/sim_deblur_multi_system/output_difftrain_1500 \—gt_dir /home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/sim_deblur_multi_system/Test_div100/gt \—ext png \—pred_prefix deblur
- scp -p 15022 “0: downloadladdsr.zip” juegong@180.169.75.62:/data2/user/juegong/AddsR
-在 Linux 终端中使用 screen 是一种非常实用的方式来创建和管理多个会话，尤其适合远程连接、长期运行任务等场景。以下是创建和使用 screen 的基本操作：
+python evaluate.py
+–pred_dir
+/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/sim_deblur_multi_system/output_difftrain_1500
+–gt_dir
+/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/sim_deblur_multi_system/Test_div100/gt
+–ext png
+–pred_prefix deblur_
+scp -p 15022 “0: downloadladdsr.zip” juegong@180.169.75.62:/data2/user/juegong/AddsR
+在 Linux 终端中使用 screen
+是一种非常实用的方式来创建和管理多个会话，尤其适合远程连接、长期运行任务等场景。以下是创建和使用
+screen 的基本操作：
 
-🔧 安装 screen（如果尚未安装）Debian/Ubuntu 系：
+🔧 安装 screen（如果尚未安装）
+Debian/Ubuntu 系：
 sudo apt updatesudo apt install screen
 Red Hat/CentOS 系：
 sudo yum install screen
 
-🚀 创建新的 screen 会话screen -S 会话名称
+🚀 创建新的 screen 会话
+screen -S 会话名称
 示例：
 screen -S mysession
 
@@ -63,8 +81,8 @@ screen -d -r 名称或ID
 
 
 
-
 💡 提示
+
 多个 screen 会话可以并行存在。
 即使你退出终端，screen 中运行的程序依然会继续运行。
 进入 screen 后的命令操作与普通终端完全一致。
@@ -75,17 +93,35 @@ screen -S mytask bash myscript.sh
 需要我帮你设置自动启动 screen 或写个脚本吗？
 在 Linux 终端中删除一个 Conda 环境，可以按照下面的步骤操作：
 
-🧹 删除 Conda 环境的命令conda remove --name 环境名 --all
+🧹 删除 Conda 环境的命令
+conda remove --name 环境名 --all
 示例：
 conda remove --name myenv --all
-这条命令的含义是：移除名为 myenv 的 conda 环境中的 所有内容，并彻底删除该环境。
+这条命令的含义是：移除名为 myenv 的 conda 环境中的
+所有内容，并彻底删除该环境。
 
-🧾 查看已有的 Conda 环境如果你不确定环境的名称，可以先查看：
+🧾 查看已有的 Conda 环境
+如果你不确定环境的名称，可以先查看：
 conda env list
 或：
 conda info --envs
-输出会显示你所有的环境，当前活跃的环境前会有一个星号 * 标记。
-CUDA_VISIBLE_DEVICES=&quot;0,1,2,3,4,5,6,7,&quot; accelerate launch train_seesr.py \—pretrained_model_name_or_path=”/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/checkpoint/SeeSR/stable-diffusion-2-base” \—output_dir=”./experience/seesr1500” \—root_folders ‘/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/Multi_System/train_6000’ \—ram_ft_path ‘/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/Multi_System/SeeSR-main/preset/models/DAPE.pth’ \—enable_xformers_memory_efficient_attention \—mixed_precision=”fp16” \—resolution=512 \—learning_rate=5e-5 \—train_batch_size=16 \—gradient_accumulation_steps=2 \—null_text_ratio=0.5—dataloader_num_workers=0 \—checkpointing_steps=10000
+输出会显示你所有的环境，当前活跃的环境前会有一个星号 *
+标记。
+CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7," accelerate launch train_seesr.py \
+–pretrained_model_name_or_path=“/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/checkpoint/SeeSR/stable-diffusion-2-base”
+–output_dir=“./experience/seesr1500”
+–root_folders
+‘/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/Multi_System/train_6000’
+–ram_ft_path
+‘/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/Multi_System/SeeSR-main/preset/models/DAPE.pth’
+–enable_xformers_memory_efficient_attention
+–mixed_precision=“fp16”
+–resolution=512
+–learning_rate=5e-5
+–train_batch_size=16
+–gradient_accumulation_steps=2
+–null_text_ratio=0.5 –dataloader_num_workers=0
+–checkpointing_steps=10000
 ]]></content>
       <categories>
         <category>科研</category>
@@ -98,34 +134,50 @@ CUDA_VISIBLE_DEVICES=&quot;0,1,2,3,4,5,6,7,&quot; accelerate launch train_seesr.
     <title>深度学习服务器操作指南</title>
     <url>/2025/06/26/DL-safari/</url>
     <content><![CDATA[目录
+
 Conda环境配置
 Linux终端操作
 Screen操作
 环境变量设置
 Git相关操作
 
-1. Conda环境配置1.1 安装Miniconda# 下载Miniconda安装脚本wget https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-latest-Linux-x86_64.sh# 赋予执行权限chmod +x Miniconda3-latest-Linux-x86_64.sh# 运行安装脚本./Miniconda3-latest-Linux-x86_64.sh
+1. Conda环境配置
+1.1 安装Miniconda
+# 下载Miniconda安装脚本wget https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-latest-Linux-x86_64.sh# 赋予执行权限chmod +x Miniconda3-latest-Linux-x86_64.sh# 运行安装脚本./Miniconda3-latest-Linux-x86_64.sh
 安装过程中按提示操作，建议接受默认安装位置并选择初始化conda。
-1.2 配置Conda镜像源创建或修改~/.condarc文件：
+1.2 配置Conda镜像源
+创建或修改~/.condarc文件：
 nano ~/.condarc
 添加以下内容（使用清华镜像源）：
 channels:  - defaultsshow_channel_urls: truedefault_channels:  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2custom_channels:  conda-forge: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud  pytorch: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud
-1.3 创建与管理环境# 创建新环境conda create -n iqa-env python=3.8# 激活环境conda activate myenv# 安装包conda install numpy scipy pandas# 列出已安装的包conda list# 安装pip包pip install transformers# 克隆环境conda create -n newenv --clone myenv# 导出环境conda env export &gt; environment.yml# 从配置文件创建环境conda env create -f environment.yml# 删除环境conda remove -n myenv --all# 退出当前环境conda deactivate
-1.4 PyTorch安装（使用国内镜像）# 安装支持CUDA的PyTorchconda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia# 或者使用pip安装（建议使用清华镜像）pip install torch torchvision torchaudio -i https://pypi.tuna.tsinghua.edu.cn/simple
-2. Linux终端操作2.1 基本文件操作# 列出文件和目录lsls -l  # 详细信息ls -a  # 显示隐藏文件ls -lh # 以人类可读格式显示文件大小# 创建目录mkdir dirnamemkdir -p path/to/nested/dir  # 创建嵌套目录# 复制文件或目录cp source destinationcp -r sourcedir destdir  # 递归复制目录及其内容# 移动或重命名文件/目录mv source destination# 删除文件rm filenamerm -f filename  # 强制删除，不提示# 删除目录rm -r dirname   # 递归删除rm -rf dirname  # 强制递归删除（谨慎使用）# 查看文件内容cat filename    # 显示全部内容less filename   # 分页显示head filename   # 显示前10行tail filename   # 显示后10行tail -f logfile # 实时查看日志文件更新for file in AAA_*; do    mv &quot;$file&quot; &quot;$&#123;file#AAA_&#125;&quot;done  #去除所有以AAA开头的文件find . -maxdepth 1 -type d -name &quot;checkpoint-*&quot; | while read dir; do  num=$(echo &quot;$dir&quot; | sed &#x27;s/.*checkpoint-//&#x27;)  if [[ $num =~ ^[0-9]+$ ]] &amp;&amp; [ $num -lt 47000 ]; then    rm -rf &quot;$dir&quot;    echo &quot;删除了: $dir&quot;  fidone
-2.2 文件权限管理# 修改文件权限chmod 755 filename  # rwxr-xr-xchmod +x filename   # 添加执行权限chmod -R 755 dirname # 递归修改目录权限# 修改文件所有者chown user:group filenamechown -R user:group dirname # 递归修改目录所有权
-2.3 文件查找# 按名称查找find /path -name &quot;filename&quot;find . -name &quot;*.py&quot;  # 查找当前目录下所有Python文件# 按类型查找find /path -type f  # 只查找文件find /path -type d  # 只查找目录# 按大小查找find /path -size +100M  # 查找大于100MB的文件# 按修改时间查找find /path -mtime -7  # 查找7天内修改的文件
-2.4 文件压缩与解压# tar格式tar -cvf archive.tar files/  # 创建tar归档tar -xvf archive.tar         # 解压tar归档tar -tvf archive.tar         # 查看内容不解压# tar.gz格式tar -czvf archive.tar.gz files/  # 创建tar.gz压缩包tar -xzvf archive.tar.gz         # 解压tar.gz# tar.bz2格式tar -cjvf archive.tar.bz2 files/ # 创建tar.bz2压缩包tar -xjvf archive.tar.bz2        # 解压tar.bz2# zip格式zip -r archive.zip files/        # 创建zip压缩包unzip archive.zip                # 解压zipunzip -l archive.zip             # 查看内容不解压
-2.5 远程文件传输(SCP)# 从本地复制到远程scp localfile user@remote_host:/remote/path/# 从远程复制到本地scp user@remote_host:/remote/path/file localpath/# 复制目录（加-r参数）scp -r localdir user@remote_host:/remote/path/scp -r user@remote_host:/remote/path/dir localpath/# 指定端口scp -P 2222 localfile user@remote_host:/remote/path/# 通过跳板机传输scp -o &quot;ProxyJump user1@jumphost&quot; localfile user2@destination:/path/
-2.6 磁盘与系统监控# 查看磁盘使用情况df -h# 查看目录大小du -sh /pathdu -h --max-depth=1 /path  # 只显示直接子目录大小# 查看系统资源top         # 实时系统状态htop        # 更友好的top替代品free -h     # 内存使用情况nvidia-smi  # GPU状态和使用情况watch -n 1 nvidia-smi  # 每秒更新一次GPU状态
-3. Screen操作Screen是一个终端多路复用器，允许你在一个终端会话中使用多个窗口，即使断开连接，程序也能继续运行。
-3.1 基本使用# 安装screen（如果尚未安装）sudo apt-get install screen# 创建新的screen会话screen# 创建命名会话screen -S session_name# 分离当前会话（不终止会话中运行的程序）# 使用快捷键：Ctrl+a 然后按 d# 列出所有会话screen -ls# 重新连接到会话screen -r session_idscreen -r session_name  # 如果之前命名了会话# 如果会话显示为Attachedscreen -d -r session_id  # 先分离再连接# 终止当前会话exit  # 或者 Ctrl+d
-3.2 Screen快捷键所有Screen快捷键都以Ctrl+a为前缀，然后按下对应的功能键：
+1.3 创建与管理环境
+# 创建新环境conda create -n iqa-env python=3.8# 激活环境conda activate myenv# 安装包conda install numpy scipy pandas# 列出已安装的包conda list# 安装pip包pip install transformers# 克隆环境conda create -n newenv --clone myenv# 导出环境conda env export &gt; environment.yml# 从配置文件创建环境conda env create -f environment.yml# 删除环境conda remove -n myenv --all# 退出当前环境conda deactivate
+1.4 PyTorch安装（使用国内镜像）
+# 安装支持CUDA的PyTorchconda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia# 或者使用pip安装（建议使用清华镜像）pip install torch torchvision torchaudio -i https://pypi.tuna.tsinghua.edu.cn/simple
+2. Linux终端操作
+2.1 基本文件操作
+# 列出文件和目录lsls -l  # 详细信息ls -a  # 显示隐藏文件ls -lh # 以人类可读格式显示文件大小# 创建目录mkdir dirnamemkdir -p path/to/nested/dir  # 创建嵌套目录# 复制文件或目录cp source destinationcp -r sourcedir destdir  # 递归复制目录及其内容# 移动或重命名文件/目录mv source destination# 删除文件rm filenamerm -f filename  # 强制删除，不提示# 删除目录rm -r dirname   # 递归删除rm -rf dirname  # 强制递归删除（谨慎使用）# 查看文件内容cat filename    # 显示全部内容less filename   # 分页显示head filename   # 显示前10行tail filename   # 显示后10行tail -f logfile # 实时查看日志文件更新for file in AAA_*; do    mv &quot;$file&quot; &quot;$&#123;file#AAA_&#125;&quot;done  #去除所有以AAA开头的文件find . -maxdepth 1 -type d -name &quot;checkpoint-*&quot; | while read dir; do  num=$(echo &quot;$dir&quot; | sed &#x27;s/.*checkpoint-//&#x27;)  if [[ $num =~ ^[0-9]+$ ]] &amp;&amp; [ $num -lt 47000 ]; then    rm -rf &quot;$dir&quot;    echo &quot;删除了: $dir&quot;  fidone
+2.2 文件权限管理
+# 修改文件权限chmod 755 filename  # rwxr-xr-xchmod +x filename   # 添加执行权限chmod -R 755 dirname # 递归修改目录权限# 修改文件所有者chown user:group filenamechown -R user:group dirname # 递归修改目录所有权
+2.3 文件查找
+# 按名称查找find /path -name &quot;filename&quot;find . -name &quot;*.py&quot;  # 查找当前目录下所有Python文件# 按类型查找find /path -type f  # 只查找文件find /path -type d  # 只查找目录# 按大小查找find /path -size +100M  # 查找大于100MB的文件# 按修改时间查找find /path -mtime -7  # 查找7天内修改的文件
+2.4 文件压缩与解压
+# tar格式tar -cvf archive.tar files/  # 创建tar归档tar -xvf archive.tar         # 解压tar归档tar -tvf archive.tar         # 查看内容不解压# tar.gz格式tar -czvf archive.tar.gz files/  # 创建tar.gz压缩包tar -xzvf archive.tar.gz         # 解压tar.gz# tar.bz2格式tar -cjvf archive.tar.bz2 files/ # 创建tar.bz2压缩包tar -xjvf archive.tar.bz2        # 解压tar.bz2# zip格式zip -r archive.zip files/        # 创建zip压缩包unzip archive.zip                # 解压zipunzip -l archive.zip             # 查看内容不解压
+2.5 远程文件传输(SCP)
+# 从本地复制到远程scp localfile user@remote_host:/remote/path/# 从远程复制到本地scp user@remote_host:/remote/path/file localpath/# 复制目录（加-r参数）scp -r localdir user@remote_host:/remote/path/scp -r user@remote_host:/remote/path/dir localpath/# 指定端口scp -P 2222 localfile user@remote_host:/remote/path/# 通过跳板机传输scp -o &quot;ProxyJump user1@jumphost&quot; localfile user2@destination:/path/
+2.6 磁盘与系统监控
+# 查看磁盘使用情况df -h# 查看目录大小du -sh /pathdu -h --max-depth=1 /path  # 只显示直接子目录大小# 查看系统资源top         # 实时系统状态htop        # 更友好的top替代品free -h     # 内存使用情况nvidia-smi  # GPU状态和使用情况watch -n 1 nvidia-smi  # 每秒更新一次GPU状态
+3. Screen操作
+Screen是一个终端多路复用器，允许你在一个终端会话中使用多个窗口，即使断开连接，程序也能继续运行。
+3.1 基本使用
+# 安装screen（如果尚未安装）sudo apt-get install screen# 创建新的screen会话screen# 创建命名会话screen -S session_name# 分离当前会话（不终止会话中运行的程序）# 使用快捷键：Ctrl+a 然后按 d# 列出所有会话screen -ls# 重新连接到会话screen -r session_idscreen -r session_name  # 如果之前命名了会话# 如果会话显示为Attachedscreen -d -r session_id  # 先分离再连接# 终止当前会话exit  # 或者 Ctrl+d
+3.2 Screen快捷键
+所有Screen快捷键都以Ctrl+a为前缀，然后按下对应的功能键：
 
 Ctrl+a c - 创建新窗口
 Ctrl+a n - 切换到下一个窗口
 Ctrl+a p - 切换到上一个窗口
-Ctrl+a &quot; - 显示所有窗口列表
+Ctrl+a " - 显示所有窗口列表
 Ctrl+a A - 重命名当前窗口
 Ctrl+a d - 分离当前会话
 Ctrl+a k - 杀死当前窗口
@@ -134,33 +186,53 @@ Ctrl+a | - 垂直分割当前窗口
 Ctrl+a Tab - 在分割窗口间切换
 Ctrl+a ? - 显示帮助
 
-3.3 技巧与最佳实践# 配置文件（〜/.screenrc）示例echo &quot;startup_message off&quot; &gt;&gt; ~/.screenrc  # 禁用启动消息echo &quot;defscrollback 10000&quot; &gt;&gt; ~/.screenrc  # 增加历史记录# 在后台启动程序screen -dmS train_model bash -c &quot;cd /path/to/project &amp;&amp; python train.py&quot;# 记录screen输出到文件screen -L -Logfile train_output.log -dmS train_model bash -c &quot;python train.py&quot;
-4. 环境变量设置4.1 临时环境变量# 设置临时环境变量（当前会话有效）export VARIABLE_NAME=value# 查看环境变量echo $VARIABLE_NAMEenv | grep VARIABLE_NAME
-4.2 永久环境变量编辑~/.bashrc或~/.zshrc（取决于你使用的shell）：
+3.3 技巧与最佳实践
+# 配置文件（〜/.screenrc）示例echo &quot;startup_message off&quot; &gt;&gt; ~/.screenrc  # 禁用启动消息echo &quot;defscrollback 10000&quot; &gt;&gt; ~/.screenrc  # 增加历史记录# 在后台启动程序screen -dmS train_model bash -c &quot;cd /path/to/project &amp;&amp; python train.py&quot;# 记录screen输出到文件screen -L -Logfile train_output.log -dmS train_model bash -c &quot;python train.py&quot;
+4. 环境变量设置
+4.1 临时环境变量
+# 设置临时环境变量（当前会话有效）export VARIABLE_NAME=value# 查看环境变量echo $VARIABLE_NAMEenv | grep VARIABLE_NAME
+4.2 永久环境变量
+编辑~/.bashrc或~/.zshrc（取决于你使用的shell）：
 nano ~/.bashrc
 添加以下内容：
 # 添加路径到PATH变量export PATH=$PATH:/path/to/add# 设置其他环境变量export VARIABLE_NAME=value
 使修改生效：
 source ~/.bashrc
-4.3 设置PyTorch相关环境变量# 使用国内PyTorch镜像源export TORCH_HOME=$HOME/.cache/torchexport PYTORCH_PRETRAINED_BERT_CACHE=$HOME/.cache/torch/transformers# 禁用并行光栅化以减少内存使用（某些情况下有用）export PYTORCH_DISABLE_RASTERIZE=1# 设置CUDA可见设备export CUDA_VISIBLE_DEVICES=0,1  # 只使用GPU 0和1
-4.4 设置Hugging Face相关环境变量# 设置Hugging Face缓存目录export HF_HOME=$HOME/.cache/huggingfaceexport TRANSFORMERS_CACHE=$HOME/.cache/huggingface/transformersexport DATASETS_CACHE=$HOME/.cache/huggingface/datasetsexport HF_DATASETS_CACHE=$HOME/.cache/huggingface/datasets# 使用国内镜像下载模型export HF_ENDPOINT=https://hf-mirror.com# 或者：# export HF_ENDPOINT=https://huggingface.tsinghua.edu.cn
-4.5 其他常用环境变量# 增加Python路径export PYTHONPATH=$PYTHONPATH:/path/to/your/project# 设置代理export http_proxy=http://proxy.example.com:portexport https_proxy=http://proxy.example.com:portexport all_proxy=socks5://proxy.example.com:port# 禁用代理unset http_proxy https_proxy all_proxy
-5. Git相关操作5.1 Git配置# 设置用户信息git config --global user.name &quot;Your Name&quot;git config --global user.email &quot;your.email@example.com&quot;# 设置默认编辑器git config --global core.editor vim# 设置git使用https而非git协议git config --global url.&quot;https://&quot;.insteadOf git://# 查看所有配置git config --list
-5.2 Git代理设置# 为Github设置代理git config --global http.https://github.com.proxy http://proxy.example.com:portgit config --global https.https://github.com.proxy http://proxy.example.com:port# 取消代理git config --global --unset http.https://github.com.proxygit config --global --unset https.https://github.com.proxy
-5.3 基本Git操作# 初始化仓库git init# 克隆仓库git clone https://github.com/username/repo.gitgit clone https://github.com/username/repo.git --depth 1  # 浅克隆（只获取最新版本）# 添加文件到暂存区git add filenamegit add .  # 添加所有修改# 提交更改git commit -m &quot;Commit message&quot;git commit -a -m &quot;Commit message&quot;  # 添加所有已修改文件并提交# 查看状态git status# 查看差异git diffgit diff --staged  # 查看已暂存的差异# 查看提交历史git loggit log --oneline  # 简洁模式git log --graph    # 图形化显示分支和合并历史
-5.4 分支操作# 查看分支git branch# 创建分支git branch branch_name# 切换分支git checkout branch_name# 或使用新语法git switch branch_name# 创建并切换到新分支git checkout -b new_branch# 或使用新语法git switch -c new_branch# 合并分支git merge branch_name# 删除分支git branch -d branch_name  # 安全删除git branch -D branch_name  # 强制删除
-5.5 远程仓库操作# 添加远程仓库git remote add origin https://github.com/username/repo.git# 查看远程仓库git remote -v# 从远程获取更新git fetch origin# 拉取更新并合并git pull origin branch_name# 推送到远程仓库git push origin branch_name# 设置默认上游分支git push -u origin branch_name  # 之后可直接使用git push
-5.6 Git高级操作# 暂存当前修改git stashgit stash save &quot;stash message&quot;# 查看暂存列表git stash list# 应用暂存git stash apply  # 应用最近的暂存但不删除git stash pop    # 应用最近的暂存并删除git stash apply stash@&#123;n&#125;  # 应用特定的暂存# 丢弃暂存git stash dropgit stash drop stash@&#123;n&#125;# 清除所有暂存git stash clear# 重置修改git reset HEAD filename  # 取消暂存但保留工作区修改git reset --hard HEAD    # 重置暂存区和工作区到最新提交# 回退到特定提交git reset --hard commit_hash# 生成补丁git format-patch -1 HEAD  # 最新提交的补丁git format-patch -n HEAD  # 最新n个提交的补丁# 应用补丁git apply patch_filegit am patch_file  # 应用并创建提交
-5.7 Git LFS (Large File Storage)用于大文件存储，如模型权重文件：
+4.3 设置PyTorch相关环境变量
+# 使用国内PyTorch镜像源export TORCH_HOME=$HOME/.cache/torchexport PYTORCH_PRETRAINED_BERT_CACHE=$HOME/.cache/torch/transformers# 禁用并行光栅化以减少内存使用（某些情况下有用）export PYTORCH_DISABLE_RASTERIZE=1# 设置CUDA可见设备export CUDA_VISIBLE_DEVICES=0,1  # 只使用GPU 0和1
+4.4 设置Hugging
+Face相关环境变量
+# 设置Hugging Face缓存目录export HF_HOME=$HOME/.cache/huggingfaceexport TRANSFORMERS_CACHE=$HOME/.cache/huggingface/transformersexport DATASETS_CACHE=$HOME/.cache/huggingface/datasetsexport HF_DATASETS_CACHE=$HOME/.cache/huggingface/datasets# 使用国内镜像下载模型export HF_ENDPOINT=https://hf-mirror.com# 或者：# export HF_ENDPOINT=https://huggingface.tsinghua.edu.cn
+4.5 其他常用环境变量
+# 增加Python路径export PYTHONPATH=$PYTHONPATH:/path/to/your/project# 设置代理export http_proxy=http://proxy.example.com:portexport https_proxy=http://proxy.example.com:portexport all_proxy=socks5://proxy.example.com:port# 禁用代理unset http_proxy https_proxy all_proxy
+5. Git相关操作
+5.1 Git配置
+# 设置用户信息git config --global user.name &quot;Your Name&quot;git config --global user.email &quot;your.email@example.com&quot;# 设置默认编辑器git config --global core.editor vim# 设置git使用https而非git协议git config --global url.&quot;https://&quot;.insteadOf git://# 查看所有配置git config --list
+5.2 Git代理设置
+# 为Github设置代理git config --global http.https://github.com.proxy http://proxy.example.com:portgit config --global https.https://github.com.proxy http://proxy.example.com:port# 取消代理git config --global --unset http.https://github.com.proxygit config --global --unset https.https://github.com.proxy
+5.3 基本Git操作
+# 初始化仓库git init# 克隆仓库git clone https://github.com/username/repo.gitgit clone https://github.com/username/repo.git --depth 1  # 浅克隆（只获取最新版本）# 添加文件到暂存区git add filenamegit add .  # 添加所有修改# 提交更改git commit -m &quot;Commit message&quot;git commit -a -m &quot;Commit message&quot;  # 添加所有已修改文件并提交# 查看状态git status# 查看差异git diffgit diff --staged  # 查看已暂存的差异# 查看提交历史git loggit log --oneline  # 简洁模式git log --graph    # 图形化显示分支和合并历史
+5.4 分支操作
+# 查看分支git branch# 创建分支git branch branch_name# 切换分支git checkout branch_name# 或使用新语法git switch branch_name# 创建并切换到新分支git checkout -b new_branch# 或使用新语法git switch -c new_branch# 合并分支git merge branch_name# 删除分支git branch -d branch_name  # 安全删除git branch -D branch_name  # 强制删除
+5.5 远程仓库操作
+# 添加远程仓库git remote add origin https://github.com/username/repo.git# 查看远程仓库git remote -v# 从远程获取更新git fetch origin# 拉取更新并合并git pull origin branch_name# 推送到远程仓库git push origin branch_name# 设置默认上游分支git push -u origin branch_name  # 之后可直接使用git push
+5.6 Git高级操作
+# 暂存当前修改git stashgit stash save &quot;stash message&quot;# 查看暂存列表git stash list# 应用暂存git stash apply  # 应用最近的暂存但不删除git stash pop    # 应用最近的暂存并删除git stash apply stash@&#123;n&#125;  # 应用特定的暂存# 丢弃暂存git stash dropgit stash drop stash@&#123;n&#125;# 清除所有暂存git stash clear# 重置修改git reset HEAD filename  # 取消暂存但保留工作区修改git reset --hard HEAD    # 重置暂存区和工作区到最新提交# 回退到特定提交git reset --hard commit_hash# 生成补丁git format-patch -1 HEAD  # 最新提交的补丁git format-patch -n HEAD  # 最新n个提交的补丁# 应用补丁git apply patch_filegit am patch_file  # 应用并创建提交
+5.7 Git LFS (Large File
+Storage)
+用于大文件存储，如模型权重文件：
 # 安装Git LFSsudo apt-get install git-lfsgit lfs install# 跟踪大文件git lfs track &quot;*.weights&quot;  # 跟踪所有.weights文件git lfs track &quot;models/*&quot;   # 跟踪models目录下所有文件# 确保.gitattributes被提交git add .gitattributesgit commit -m &quot;Track large files with Git LFS&quot;# 常规操作同普通Gitgit add large_file.weightsgit commit -m &quot;Add model weights&quot;git push origin main
-5.8 配置国内Git镜像针对GitHub访问慢的问题，可使用以下镜像：
+5.8 配置国内Git镜像
+针对GitHub访问慢的问题，可使用以下镜像：
 # 使用镜像加速克隆git clone https://github.com.cnpmjs.org/username/repo.git# 或git clone https://ghproxy.com/https://github.com/username/repo.git# 修改已克隆仓库的远程URLgit remote set-url origin https://github.com.cnpmjs.org/username/repo.git
-5.9 Git HooksGit钩子可以在特定Git事件发生时执行自定义脚本：
+5.9 Git Hooks
+Git钩子可以在特定Git事件发生时执行自定义脚本：
 # 创建预提交钩子（在.git/hooks目录下）nano .git/hooks/pre-commit
 示例pre-commit钩子（检查Python语法）:
 #!/bin/bashfor file in $(git diff --cached --name-only | grep &#x27;\.py$&#x27;)do    python -m py_compile $file    if [ $? -ne 0 ]; then        echo &quot;Syntax error in $file&quot;        exit 1    fidone
 赋予执行权限：
-chmod +x .git/hooks/pre-commit]]></content>
+chmod +x .git/hooks/pre-commit
+]]></content>
       <categories>
         <category>科研</category>
       </categories>
@@ -171,49 +243,87 @@ chmod +x .git/hooks/pre-commit]]></content>
   <entry>
     <title>StyID学习与提问</title>
     <url>/2025/06/26/StyID/</url>
-    <content><![CDATA[Taming Transformers 的作用Taming Transformers 是 CompVis 团队开发的一个库，它包含了 VQ-GAN (Vector Quantized Generative Adversarial Network) 的实现。在 StyleID 项目中，它的主要作用有：
+    <content><![CDATA[Taming Transformers 的作用
+Taming Transformers 是 CompVis 团队开发的一个库，它包含了 VQ-GAN
+(Vector Quantized Generative Adversarial Network) 的实现。在 StyleID
+项目中，它的主要作用有：
 
-向量量化技术: 你可以看到在 autoencoder.py 中引入了 VectorQuantizer 组件：
- from taming.modules.vqvae.quantize import VectorQuantizer2 as VectorQuantizer
- 这个组件在 VQModel 类中被用作自编码器的一部分，用于实现潜在空间的离散化。
+向量量化技术: 你可以看到在
+autoencoder.py 中引入了 VectorQuantizer
+组件：
+from taming.modules.vqvae.quantize import VectorQuantizer2 as VectorQuantizer
+这个组件在 VQModel
+类中被用作自编码器的一部分，用于实现潜在空间的离散化。
+自编码器架构: Stable Diffusion 的第一阶段模型
+(自编码器) 在架构设计上借鉴了 Taming Transformers
+的思想，用于高效地压缩图像到潜在空间。
+感知损失函数: Taming Transformers
+提供了一些复杂的损失函数实现，这些在训练高质量的图像生成模型时非常重要。虽然
+StyleID
+是免训练的方法，但它使用的预训练模型在训练时可能使用了这些损失函数。
 
-自编码器架构: Stable Diffusion 的第一阶段模型 (自编码器) 在架构设计上借鉴了 Taming Transformers 的思想，用于高效地压缩图像到潜在空间。
+CLIP 的作用
+CLIP (Contrastive Language-Image Pre-training) 是 OpenAI
+开发的一个多模态模型，它在 StyleID 中的作用包括：
 
-感知损失函数: Taming Transformers 提供了一些复杂的损失函数实现，这些在训练高质量的图像生成模型时非常重要。虽然 StyleID 是免训练的方法，但它使用的预训练模型在训练时可能使用了这些损失函数。
-
-CLIP 的作用CLIP (Contrastive Language-Image Pre-training) 是 OpenAI 开发的一个多模态模型，它在 StyleID 中的作用包括：
-
-条件引导: 虽然在 StyleID 的风格迁移过程中没有直接使用文本提示，但 Stable Diffusion 模型的条件引导机制基于 CLIP 的文本编码器。在代码中：
- uc = model.get_learned_conditioning([&quot;&quot;])
- 这一行创建了一个无条件引导向量，本质上是使用 CLIP 的文本编码器处理空字符串。
-
-潜在表示的对齐: CLIP 在预训练过程中学习了文本和图像之间的对齐表示，这对于 Stable Diffusion 模型理解内容和风格的概念非常重要。StyleID 正是利用了这种潜在的语义理解。
-
-模型架构依赖: Stable Diffusion 的架构设计中集成了 CLIP，用于处理条件信息。即使 StyleID 不直接使用文本提示，底层模型的加载和初始化仍然需要这些组件。
+条件引导: 虽然在 StyleID
+的风格迁移过程中没有直接使用文本提示，但 Stable Diffusion
+模型的条件引导机制基于 CLIP 的文本编码器。在代码中：
+uc = model.get_learned_conditioning([&quot;&quot;])
+这一行创建了一个无条件引导向量，本质上是使用 CLIP
+的文本编码器处理空字符串。
+潜在表示的对齐: CLIP
+在预训练过程中学习了文本和图像之间的对齐表示，这对于 Stable Diffusion
+模型理解内容和风格的概念非常重要。StyleID
+正是利用了这种潜在的语义理解。
+模型架构依赖: Stable Diffusion
+的架构设计中集成了 CLIP，用于处理条件信息。即使 StyleID
+不直接使用文本提示，底层模型的加载和初始化仍然需要这些组件。
 
 为何这两个库是必要的
-架构完整性: 即使 StyleID 可能没有直接使用这两个库的所有功能，但它们是 Stable Diffusion 模型架构的组成部分。不包含它们可能导致模型加载错误或功能不完整。
-环境一致性: environment.yaml 文件显示这两个库通过 git 链接安装，确保版本与 CompVis 原始实现保持一致：
- - -e git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers- -e git+https://github.com/openai/CLIP.git@main#egg=clip
 
-内部依赖关系: 从代码中可以看出，VQModel 和 AutoencoderKL 类依赖于 Taming Transformers 中的组件。而 CLIP 可能在 model.get_learned_conditioning 函数中被隐式使用。
+架构完整性: 即使 StyleID
+可能没有直接使用这两个库的所有功能，但它们是 Stable Diffusion
+模型架构的组成部分。不包含它们可能导致模型加载错误或功能不完整。
+环境一致性: environment.yaml
+文件显示这两个库通过 git 链接安装，确保版本与 CompVis
+原始实现保持一致：
+- -e git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers- -e git+https://github.com/openai/CLIP.git@main#egg=clip
+内部依赖关系:
+从代码中可以看出，VQModel 和 AutoencoderKL
+类依赖于 Taming Transformers 中的组件。而 CLIP 可能在
+model.get_learned_conditioning 函数中被隐式使用。
 
+与 StyleID 的关系
+StyleID
+的创新之处在于它利用了扩散模型内部的注意力机制来实现风格迁移，而不需要额外训练。这依赖于加载完整的预训练
+Stable Diffusion 模型，包括：
 
-与 StyleID 的关系StyleID 的创新之处在于它利用了扩散模型内部的注意力机制来实现风格迁移，而不需要额外训练。这依赖于加载完整的预训练 Stable Diffusion 模型，包括：
+自编码器 (使用 Taming Transformers
+的组件)：负责将图像压缩到潜在空间和从潜在空间重建图像。
+条件机制 (使用
+CLIP)：即使使用空提示，模型的条件处理管道仍需要 CLIP 组件。
+U-Net 扩散模型：StyleID 的核心创新在于操纵 U-Net
+中的注意力层的查询、键和值向量。
 
-自编码器 (使用 Taming Transformers 的组件)：负责将图像压缩到潜在空间和从潜在空间重建图像。
-条件机制 (使用 CLIP)：即使使用空提示，模型的条件处理管道仍需要 CLIP 组件。
-U-Net 扩散模型：StyleID 的核心创新在于操纵 U-Net 中的注意力层的查询、键和值向量。
+总的来说，这两个库是 Stable Diffusion 生态系统的关键组成部分，虽然
+StyleID
+的核心创新不直接依赖于它们的独特功能，但作为整个模型架构的一部分，它们是完整功能实现所必需的。
+核心关系解析
+Stable Diffusion 是 Latent Diffusion Model 的一个特定实现，而 StyleID
+则是在此基础上开发的一种应用方法。它们的关系可以理解为：
 
-总的来说，这两个库是 Stable Diffusion 生态系统的关键组成部分，虽然 StyleID 的核心创新不直接依赖于它们的独特功能，但作为整个模型架构的一部分，它们是完整功能实现所必需的。
-核心关系解析Stable Diffusion 是 Latent Diffusion Model 的一个特定实现，而 StyleID 则是在此基础上开发的一种应用方法。它们的关系可以理解为：
+Latent Diffusion Model (LDM)
+是基础架构，它在压缩的潜在空间而非像素空间中进行扩散过程，提高了计算效率。
+Stable Diffusion 是 LDM
+的一个大规模实现，通过在大量数据上预训练得到的模型。
+StyleID 是一种利用预训练好的 Stable Diffusion
+模型进行风格迁移的方法，无需额外训练。
 
-Latent Diffusion Model (LDM) 是基础架构，它在压缩的潜在空间而非像素空间中进行扩散过程，提高了计算效率。
-Stable Diffusion 是 LDM 的一个大规模实现，通过在大量数据上预训练得到的模型。
-StyleID 是一种利用预训练好的 Stable Diffusion 模型进行风格迁移的方法，无需额外训练。
-
-所以按理说原论文中的核心网络主要是运用了DDIM，但是这个DDIM是在stable difussion中预训练好的，所以说采用了stable difussion？
-关于UNet和DDIM的提问首先，有几点需要纠正：
+所以按理说原论文中的核心网络主要是运用了DDIM，但是这个DDIM是在stable
+difussion中预训练好的，所以说采用了stable difussion？
+关于UNet和DDIM的提问
+首先，有几点需要纠正：
 
 U-Net的角色：U-Net不仅在训练时使用，在推理/采样阶段同样重要。在扩散模型中，U-Net是预测噪声的核心网络，无论是训练还是推理都需要它。
 DDIM的作用：DDIM确实是一种采样方法，但它同样依赖U-Net来预测噪声。在论文的实现中，DDIM被用于两个目的：反向过程(inversion)和生成过程(generation)。
@@ -225,7 +335,7 @@ self_attn_output_block_indices = list(map(int, opt.attn_layer.split(&#x27;,&#x27
 而默认的attn_layer参数是：
 parser.add_argument(&quot;--attn_layer&quot;, type=str, default=&#x27;6,7,8,9,10,11&#x27;, help=&#x27;injection attention feature layers&#x27;)
 这意味着代码默认会提取U-Net的decoder部分的6-11层(即后期层)的self-attention特征。这些层被认为主要负责局部纹理等风格相关的特征。
-另外，关于你提到的函数参数feature_type=&quot;input_block&quot;，这只是用来命名保存的特征，并不表示只提取输入块的特征。实际上，代码中调用此函数时使用了：
+另外，关于你提到的函数参数feature_type="input_block"，这只是用来命名保存的特征，并不表示只提取输入块的特征。实际上，代码中调用此函数时使用了：
 save_feature_maps(unet_model.output_blocks, i, &quot;output_block&quot;)
 这清楚地表明它提取的是U-Net的output_blocks(decoder部分)中的attention特征。
 总结来说：
@@ -235,80 +345,100 @@ save_feature_maps(unet_model.output_blocks, i, &quot;output_block&quot;)
 注意力特征的替换只针对特定的层，这些层被认为对纹理和风格表现更为重要
 
 这种精心设计的方法允许模型在保留内容结构的同时有效地转移风格特征。
-DDIM过程的理解实际上，在扩散模型中有两种主要的过程：
+DDIM过程的理解
+实际上，在扩散模型中有两种主要的过程：
 
-正向扩散过程(Forward Diffusion)：将清晰图像逐步添加噪声，最终变成纯噪声
-反向扩散过程(Reverse Diffusion)：从纯噪声开始，逐步去噪，生成清晰图像
+正向扩散过程(Forward
+Diffusion)：将清晰图像逐步添加噪声，最终变成纯噪声
+反向扩散过程(Reverse
+Diffusion)：从纯噪声开始，逐步去噪，生成清晰图像
 
 对于扩散模型的采样，通常的流程是从随机噪声出发，通过反向扩散生成图像。DDIM是这个反向扩散过程的一种特定采样算法。
-DDIM Inversion的理解论文中使用的”DDIM inversion”是一种特殊技术，它可以看作是反向扩散过程的逆操作。也就是说，它允许我们：
+DDIM Inversion的理解
+论文中使用的”DDIM
+inversion”是一种特殊技术，它可以看作是反向扩散过程的逆操作。也就是说，它允许我们：
 
 从真实图像开始
 重建可能产生该图像的噪声潜变量
 
 这个过程在数学上是通过反向运行DDIM采样步骤实现的，但目标变成了重建噪声而不是生成图像。
-代码中的U-Net应用关于你的核心问题：这两个过程中使用的U-Net是否相同？
+代码中的U-Net应用
+关于你的核心问题：这两个过程中使用的U-Net是否相同？
 是的，使用的是同一个U-Net模型。在代码中可以看到：
 # 加载模型model = load_model_from_config(model_config, f&quot;&#123;opt.ckpt&#125;&quot;)unet_model = model.model.diffusion_model# DDIM inversion - 提取内容和风格图像特征cnt_z_enc, _ = sampler.encode_ddim(init_cnt.clone(), ...)  # 使用U-Netsty_z_enc, _ = sampler.encode_ddim(init_sty.clone(), ...)  # 使用同一个U-Net# 正向扩散/生成 - 使用提取的特征samples_ddim, intermediates = sampler.sample(...)  # 仍然使用同一个U-Net
 关键区别在于：
 
 DDIM Inversion：
+
 输入是真实图像
 输出是噪声潜变量
 在过程中收集注意力特征(Q, K, V)
 
-
 DDIM 生成：
+
 输入是初始化的噪声(可能通过AdaIN混合)
 使用先前收集的注意力特征替换/注入模型中相应位置的特征
 输出是生成的风格化图像
 
 
-
-为什么使用这种方式？这种设计的巧妙之处在于：
+为什么使用这种方式？
+这种设计的巧妙之处在于：
 
 通过DDIM inversion将内容和风格图像映射到同一个潜在空间中
 在这个共享空间内，可以精确控制哪些特征来自内容图像，哪些来自风格图像
 最后使用相同的模型生成融合风格和内容的输出图像
 
 整个过程中，所有步骤都使用了相同的预训练U-Net模型，只是在不同阶段对其中的特征进行了操作和替换，这是这种方法无需额外训练就能实现风格迁移的关键。
-Self-Attention vs Cross-Attention: StyleID在现代扩散模型中的适用性您提出了一个非常有见地的问题。确实，Stable Diffusion的架构随着版本迭代发生了重要变化，尤其是在注意力机制的应用上。让我深入分析这个问题。
-Self-Attention与Cross-Attention的演变计算效率问题Self-Attention(SA)的计算复杂度是O(N²)，其中N是特征图的像素数。这意味着：
+Self-Attention
+vs Cross-Attention: StyleID在现代扩散模型中的适用性
+您提出了一个非常有见地的问题。确实，Stable
+Diffusion的架构随着版本迭代发生了重要变化，尤其是在注意力机制的应用上。让我深入分析这个问题。
+Self-Attention与Cross-Attention的演变
+计算效率问题
+Self-Attention(SA)的计算复杂度是O(N²)，其中N是特征图的像素数。这意味着：
 
 当特征图尺寸为8×8时，需要计算64²=4,096个注意力分数
 当特征图尺寸为32×32时，需要计算1,024²=1,048,576个注意力分数
 当特征图尺寸为64×64时，计算量急剧增加到4,096²=16,777,216个注意力分数
 
 这种二次增长导致在高分辨率下SA的计算成本过高，因此较新的模型确实偏向于使用更多的Cross-Attention(CA)。
-现代SD模型的架构变化SD XL等较新模型的主要架构变化包括：
+现代SD模型的架构变化
+SD XL等较新模型的主要架构变化包括：
 
 减少了高分辨率特征图上的SA层数量
 增加了CA层的使用，利用文本特征指导图像生成
 引入了分组、窗口化注意力等优化技术
 采用了更高效的注意力变体，如Flash Attention
 
-StyleID方法在现代模型上的适用性分析潜在局限性
+StyleID方法在现代模型上的适用性分析
+潜在局限性
+
 可操作层减少：如您所指出，现代SD模型减少了SA层的使用，这直接限制了StyleID可操作的网络组件数量。
 计算效率挑战：即使在保留SA层的区域，处理高分辨率图像时的计算负担也会大幅增加。StyleID需要同时处理内容图像和风格图像的特征，计算压力更大。
-分辨率扩展性：StyleID在SD 1.4上针对64×64的潜在空间（对应512×512像素输出）进行了优化。当扩展到768×768或更高分辨率时，性能可能会受到影响。
+分辨率扩展性：StyleID在SD
+1.4上针对64×64的潜在空间（对应512×512像素输出）进行了优化。当扩展到768×768或更高分辨率时，性能可能会受到影响。
 
-为何依然有价值尽管有这些挑战，StyleID的方法仍具有重要价值：
+为何依然有价值
+尽管有这些挑战，StyleID的方法仍具有重要价值：
 
 概念创新：StyleID证明了通过操作注意力层的QKV向量可以实现高质量风格迁移，这一概念可以扩展到其他注意力变体。
 无训练优势：即使在较新的模型上，无需训练的风格迁移方法仍然具有巨大的实用价值。
 底层机制探索：StyleID揭示了扩散模型内部表征的属性，这些发现对理解和改进扩散模型非常有价值。
 
-可能的改进方向要使StyleID适应现代更高分辨率的扩散模型，可以考虑：
+可能的改进方向
+要使StyleID适应现代更高分辨率的扩散模型，可以考虑：
 
 扩展到CA层：研究如何将KV替换方法从SA扩展到CA层，利用两种注意力机制的互补优势。
 局部注意力优化：采用窗口化注意力或其他局部注意力变体，降低高分辨率下的计算成本。
 分层策略优化：为不同分辨率的层设计特定的操作策略，而非简单地应用相同的KV替换。
 混合架构设计：结合StyleID的注意力操作与其他方法（如AdaIN或特征转换）的优势。
 
-技术演进的启示这种从SA到CA的架构演进反映了AI模型设计中常见的权衡考量：计算效率与模型能力之间的平衡。StyleID的方法虽然在早期SD模型上表现出色，但确实需要适应架构演进来保持其在高分辨率图像上的有效性。
+技术演进的启示
+这种从SA到CA的架构演进反映了AI模型设计中常见的权衡考量：计算效率与模型能力之间的平衡。StyleID的方法虽然在早期SD模型上表现出色，但确实需要适应架构演进来保持其在高分辨率图像上的有效性。
 值得注意的是，即使在最新的SD模型中，底层分辨率特征图上的SA层通常仍被保留，因为它们的计算成本相对可控。这意味着StyleID的核心思想仍然可以应用，只是需要更加精细地选择操作的层级和范围。
 将StyleID的方法与现代扩散模型架构相结合，可能会开辟更高效、更高质量的风格迁移新途径。这也是扩散模型研究中一个非常有价值的探索方向。
-temperature scaling
+temperature
+scaling
 ]]></content>
       <categories>
         <category>科研</category>
@@ -320,75 +450,102 @@ temperature scaling
   <entry>
     <title>TSD-SR阅读笔记</title>
     <url>/2025/06/30/TSD-SR%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/</url>
-    <content><![CDATA[论文阅读笔记：《TSD-SR: One-Step Diffusion with Target Score Distillation for Real-World Image Super-Resolution》
-论文核心思想本文提出了一种名为 TSD-SR 的新颖框架，旨在将强大的预训练文本到图像（T2I）扩散模型蒸馏成一个高效且有效的 单步 真实世界图像超分辨率（Real-ISR）模型。其核心思想是通过新颖的 目标分数蒸馏（TSD） 和 分布感知采样模块（DASM），解决现有蒸馏方法在应用于超分辨率任务时的性能瓶颈，从而在实现极快推理速度的同时，达到甚至超越许多复杂多步模型的图像恢复质量。
-模型解决了什么问题？该模型主要针对现有基于扩散模型的超分辨率方法中存在的两大痛点：
+    <content><![CDATA[论文阅读笔记：《TSD-SR:
+One-Step Diffusion with Target Score Distillation for Real-World Image
+Super-Resolution》
+ ##
+论文核心思想
+本文提出了一种名为 TSD-SR
+的新颖框架，旨在将强大的预训练文本到图像（T2I）扩散模型蒸馏成一个高效且有效的
+单步
+真实世界图像超分辨率（Real-ISR）模型。其核心思想是通过新颖的
+目标分数蒸馏（TSD） 和
+分布感知采样模块（DASM），解决现有蒸馏方法在应用于超分辨率任务时的性能瓶颈，从而在实现极快推理速度的同时，达到甚至超越许多复杂多步模型的图像恢复质量。
+模型解决了什么问题？
+该模型主要针对现有基于扩散模型的超分辨率方法中存在的两大痛点：
 
 多步模型的效率低下：大多数利用扩散模型先验的Real-ISR方法，由于其固有的迭代去噪特性，需要20-50步的推理过程，导致计算成本高昂，速度远不及GAN等单步方法。
-现有单步蒸馏方法的性能局限：虽然已有工作尝试将扩散模型蒸馏为单步或少步，但它们在图像恢复和细节生成方面的表现并不尽如人意。本文作者发现，这主要是因为直接套用变分分数蒸馏（VSD） 到Real-ISR任务中存在两个关键缺陷：
+现有单步蒸馏方法的性能局限：虽然已有工作尝试将扩散模型蒸馏为单步或少步，但它们在图像恢复和细节生成方面的表现并不尽如人意。本文作者发现，这主要是因为直接套用变分分数蒸馏（VSD）
+到Real-ISR任务中存在两个关键缺陷：
+
 不可靠的梯度方向：VSD依赖教师模型提供优化方向，但在训练初期，当学生模型生成的图像质量较差时，教师模型提供的梯度方向并不可靠，这会导致生成结果出现视觉伪影。
 细节恢复能力不足：VSD损失在不同时间步（timestep）上的变化很大。传统的VSD框架采用均匀采样策略来选择时间步，这会导致对细节恢复至关重要的早期时间步的梯度被稀释，使得模型难以学习恢复精细纹理。
 
 
-
-
-方法 (Methodology)为了解决上述问题，TSD-SR引入了两个核心组件：TSD Loss 和 DASM。
-1. TSD Loss (目标分数蒸馏损失)TSD Loss是一种为学生模型提供稳定可靠梯度的组合损失函数。其目的是在VSD的基础上，引入一个更可靠的监督信号来指导优化。
+ ## 方法 (Methodology)
+为了解决上述问题，TSD-SR引入了两个核心组件：TSD Loss 和 DASM。
+1. TSD Loss (目标分数蒸馏损失)
+TSD
+Loss是一种为学生模型提供稳定可靠梯度的组合损失函数。其目的是在VSD的基础上，引入一个更可靠的监督信号来指导优化。
 其梯度公式如下：
 
-\nabla_{\theta}\mathcal{L}_{TSD}(\hat{z},z,c_{y})=\mathbb{E}_{t,\epsilon}[w(t)[\epsilon_{\psi}(\hat{z}_{t};t,c_{y}) - \epsilon_{\psi}(z_{t};t,c_{y}) + \lambda(\epsilon_{\psi}(z_{t};t,c_{y}) - \epsilon_{\phi}(\hat{z}_{t};t,c_{y}))]\frac{\partial\hat{z}}{\partial\theta}]这个损失由两部分构成：
+这个损失由两部分构成：
 
-目标分数匹配 (TSM):$\epsilon{\psi}(\hat{z}{t};t,c{y}) - \epsilon{\psi}(z{t};t,c{y})$
+目标分数匹配 (TSM):ϵψ(ẑt; t, cy) − ϵψ(zt; t, cy)
 
-作用：该项强制让教师模型 ($\epsilon{\psi}对学生生成的含噪潜变量\hat{z}{t}和真实高清图像的含噪潜变量z_{t}$ 的预测尽可能保持一致。这相当于提供了一个来自真实数据分布的“锚点”，为优化提供了更可靠的方向，有效避免了伪影和过平滑问题。
+作用：该项强制让教师模型 (ϵψ)
+对“学生生成的含噪潜变量” ẑt
+和“真实高清图像的含噪潜变量” zt
+的预测尽可能保持一致。这相当于提供了一个来自真实数据分布的“锚点”，为优化提供了更可靠的方向，有效避免了伪影和过平滑问题。
+
+变分分数蒸馏 (VSD): λ(ϵψ(zt; t, cy) − ϵϕ(ẑt; t, cy))
+
+作用：该项是经典VSD的变体，旨在将教师模型 ϵψ
+的知识蒸馏给可训练的LoRA模型 ϵϕ
+，促使学生模型的分布向教师模型看齐。
 
 
-变分分数蒸馏 (VSD): $\lambda(\epsilon{\psi}(z{t};t,c{y}) - \epsilon{\phi}(\hat{z}{t};t,c{y}))$
-
-作用：该项是经典VSD的变体，旨在将教师模型 $\epsilon{\psi}的知识蒸馏给可训练的模型\epsilon{\phi}$ ，促使学生模型的分布向教师模型看齐。
-
-
-
-2. DASM (分布感知采样模块)DASM是一个为解决细节恢复不足问题而设计的采样模块。
+2. DASM (分布感知采样模块)
+DASM是一个为解决细节恢复不足问题而设计的采样模块。
 
 动机：它旨在克服传统均匀采样策略带来的梯度稀释问题。
 
-
-
-结构与流程：
-DASM首先像常规方法一样，通过加噪得到一个初始的含噪样本 。
-接着，它不再止步于此，而是利用LoRA模型 $\epsilon{\phi}进行多步迭代式的微型去噪，从而生成一系列沿着真实扩散采样轨迹的含噪样本\hat{z}{t-1}, \hat{z}_{t-2}, \dots$ 。
+ * 结构与流程： 1.
+DASM首先像常规方法一样，通过加噪得到一个初始的含噪样本 ẑt。 2.
+接着，它不再止步于此，而是利用LoRA模型 ϵϕ
+进行多步迭代式的“微型去噪”，从而生成一系列沿着真实扩散采样轨迹的含噪样本
+ẑt − 1, ẑt − 2, …
+。 3.
 在一次训练迭代中，所有这些由DASM生成的样本都会被用来计算TSD损失，并将它们的梯度累积起来，共同更新学生模型。
-
-
+*
 优势：通过这种方式，DASM在一次迭代中就强化了对细节恢复至关重要的早期时间步的学习，使得梯度能够更集中地用于优化细节生成，有效提升了图像的清晰度和真实感。
 
+训练与推理 (Training and
+Inference)
+训练策略
 
-训练与推理 (Training and Inference)训练策略模型的训练是一个知识蒸馏过程，交替更新两个主要部分：
+模型的训练是一个知识蒸馏过程，交替更新两个主要部分：
 
-学生模型 () 的更新：
+学生模型 (Gθ)
+的更新：
 
 使用一个组合损失进行优化，该损失由重建损失和正则化损失构成。
-重建损失 (): 保证基础内容正确，由像素空间的LPIPS损失和潜空间的MSE损失组成。
-正则化损失 (): 即前述的TSD损失，用于提升真实感。该损失的计算利用了DASM生成的系列样本。
+重建损失 (ℒRec):
+保证基础内容正确，由像素空间的LPIPS损失和潜空间的MSE损失组成。
+正则化损失 (ℒReg):
+即前述的TSD损失，用于提升真实感。该损失的计算利用了DASM生成的系列样本。
 
-
-LoRA模型 () 的更新：
+LoRA模型 (ϵϕ)
+的更新：
 
 作为VSD框架的一部分，这个可训练的教师副本需要被独立更新。
-它通过一个扩散损失 () 进行训练，目标是让其去噪能力与原版教师模型保持一致。
+它通过一个扩散损失 (ℒDiff)
+进行训练，目标是让其去噪能力与原版教师模型保持一致。
 
 
-
-推理策略推理过程极为简洁高效：
+推理策略
+推理过程极为简洁高效：
 
 单步完成：模型的核心优势在于它是单步的。
-流程：输入一张低质量图像，训练好的学生模型在一次前向传播中即可直接输出高质量的超分辨率结果。
+流程：输入一张低质量图像，训练好的学生模型Gθ在一次前向传播中即可直接输出高质量的超分辨率结果。
 高效性：这使得其推理速度非常快，远超需要迭代计算的多步模型，在性能和效率之间取得了极佳的平衡。
 
-总结与个人看法TSD-SR是一篇目标明确、方法创新的优秀工作。它精准地指出了VSD框架在应用于Real-ISR任务时的具体缺陷，并为此设计了两个针对性的解决方案：TSD Loss和DASM。
+总结与个人看法
+TSD-SR是一篇目标明确、方法创新的优秀工作。它精准地指出了VSD框架在应用于Real-ISR任务时的具体缺陷，并为此设计了两个针对性的解决方案：TSD
+Loss和DASM。
 
-贡献清晰：TSD Loss通过引入真实数据作为锚点，解决了VSD梯度不可靠的问题；DASM通过模拟采样轨迹累积梯度，解决了均匀采样导致的细节学习不足问题。
+贡献清晰：TSD
+Loss通过引入真实数据作为锚点，解决了VSD梯度不可靠的问题；DASM通过模拟采样轨迹累积梯度，解决了均匀采样导致的细节学习不足问题。
 实验充分：论文中的消融实验有力地证明了每个组件的有效性，并且在多个基准测试中，其单步模型的性能指标和视觉效果均表现出强大的竞争力。
 启发性：这项工作为如何将大型生成模型的能力高效地蒸馏到特定下游任务中提供了一个很好的范例。它表明，简单地套用现有框架可能效果不佳，深入分析任务特性并进行针对性地改进才是关键。
 
@@ -404,14 +561,23 @@ LoRA模型 () 的更新：
   <entry>
     <title>Hello World</title>
     <url>/2025/06/24/hello-world/</url>
-    <content><![CDATA[Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
-Quick StartCreate a new post$ hexo new &quot;My New Post&quot;
+    <content><![CDATA[Welcome to Hexo! This is your very
+first post. Check documentation for
+more info. If you get any problems when using Hexo, you can find the
+answer in troubleshooting or
+you can ask me on GitHub.
+Quick Start
+Create a new post
+$ hexo new &quot;My New Post&quot;
 More info: Writing
-Run server$ hexo server
+Run server
+$ hexo server
 More info: Server
-Generate static files$ hexo generate
+Generate static files
+$ hexo generate
 More info: Generating
-Deploy to remote sites$ hexo deploy
+Deploy to remote sites
+$ hexo deploy
 More info: Deployment
 ]]></content>
   </entry>
@@ -420,21 +586,46 @@ More info: Deployment
     <url>/2025/06/26/%E5%85%B3%E4%BA%8EDDPM%E7%9A%84%E4%B8%80%E4%BA%9B%E7%96%91%E6%83%91/</url>
     <content><![CDATA[在DDPM当中，也存在着一个类似于VAE的ELBO，我们需要优化他，表现为：
 
+
+图片
+
 其中给关于最后一项的优化我在这里在此复述一下思路：下面的q首先需要拿贝叶斯公式进行推导（因为是反向的，x_0不可以去掉）：
+
+
+图片
 
 因此我们可以完全写出正态分布函数的参数：
 
+
+图片
+
 由先验知识我们知道，分子p_θ应该同样遵守高斯分布，所以我们假设他服从一个高斯分布，并且假设他的方差服从q反向传导的方差，这样，KL散度的计算就可以被简化为期望的L2：
 
-接下来，如果我们将p当中的期望项也写成和q一样的格式，但是将x0替换为我们想要生成的xθ，然后，又有之前按Markov Chain的推导，我们可以将期望完全写成x_t和一个分布噪声之和的形式，这便是原文当中损失函数的推导：
 
+图片
+
+接下来，如果我们将p当中的期望项也写成和q一样的格式，但是将x_0替换为我们想要生成的x_θ，然后，又有之前按Markov
+Chain的推导，我们可以将期望完全写成x_t和一个分布噪声之和的形式，这便是原文当中损失函数的推导：
+
+
+图片
+
+
+
+图片
 
 这是我觉得DDPM当中比较难以理解的部分，其他的其实还是很好理解的。关于中间那个式子，再预测出ε_θ其实就很好解决了。
 所以在理解了这个之后，其实也就明白了，为什么训练的过程当中，我们需要神经网络预测的是那个ε_θ（是的，每一小步都要！）。生成过程主要就是下面这样：
 
-下面是一些实现细节Linear Noise Scheduler在正向传播的过程当中，需要用一个调度器（scheduler）来调整每一步的alpha（前大后小），貌似是线性变化的，初始实现是这样，这是第一个职责。
+
+图片
+
+下面是一些实现细节
+Linear Noise Scheduler
+在正向传播的过程当中，需要用一个调度器（scheduler）来调整每一步的alpha（前大后小），貌似是线性变化的，初始实现是这样，这是第一个职责。
 另外一个职责是，给定了最终的噪声图像x_T，以及预测的分布ε，就可以根据之前推导的公式进行重参数化，其实我觉得本质上就是可以同时实现正反向重参数化的过程（毕竟逻辑相同）。
-T值嵌入未完待续
+T值嵌入
+未完待续
 ]]></content>
       <categories>
         <category>科研</category>
