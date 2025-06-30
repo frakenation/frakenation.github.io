@@ -1,163 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>StyID学习与提问</title>
-    <url>/2025/06/26/StyID/</url>
-    <content><![CDATA[Taming Transformers 的作用Taming Transformers 是 CompVis 团队开发的一个库，它包含了 VQ-GAN (Vector Quantized Generative Adversarial Network) 的实现。在 StyleID 项目中，它的主要作用有：
-
-向量量化技术: 你可以看到在 autoencoder.py 中引入了 VectorQuantizer 组件：
- from taming.modules.vqvae.quantize import VectorQuantizer2 as VectorQuantizer
- 这个组件在 VQModel 类中被用作自编码器的一部分，用于实现潜在空间的离散化。
-
-自编码器架构: Stable Diffusion 的第一阶段模型 (自编码器) 在架构设计上借鉴了 Taming Transformers 的思想，用于高效地压缩图像到潜在空间。
-
-感知损失函数: Taming Transformers 提供了一些复杂的损失函数实现，这些在训练高质量的图像生成模型时非常重要。虽然 StyleID 是免训练的方法，但它使用的预训练模型在训练时可能使用了这些损失函数。
-
-
-CLIP 的作用CLIP (Contrastive Language-Image Pre-training) 是 OpenAI 开发的一个多模态模型，它在 StyleID 中的作用包括：
-
-条件引导: 虽然在 StyleID 的风格迁移过程中没有直接使用文本提示，但 Stable Diffusion 模型的条件引导机制基于 CLIP 的文本编码器。在代码中：
- uc = model.get_learned_conditioning([&quot;&quot;])
- 这一行创建了一个无条件引导向量，本质上是使用 CLIP 的文本编码器处理空字符串。
-
-潜在表示的对齐: CLIP 在预训练过程中学习了文本和图像之间的对齐表示，这对于 Stable Diffusion 模型理解内容和风格的概念非常重要。StyleID 正是利用了这种潜在的语义理解。
-
-模型架构依赖: Stable Diffusion 的架构设计中集成了 CLIP，用于处理条件信息。即使 StyleID 不直接使用文本提示，底层模型的加载和初始化仍然需要这些组件。
-
-
-为何这两个库是必要的
-架构完整性: 即使 StyleID 可能没有直接使用这两个库的所有功能，但它们是 Stable Diffusion 模型架构的组成部分。不包含它们可能导致模型加载错误或功能不完整。
-
-环境一致性: environment.yaml 文件显示这两个库通过 git 链接安装，确保版本与 CompVis 原始实现保持一致：
- - -e git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers- -e git+https://github.com/openai/CLIP.git@main#egg=clip
-
-内部依赖关系: 从代码中可以看出，VQModel 和 AutoencoderKL 类依赖于 Taming Transformers 中的组件。而 CLIP 可能在 model.get_learned_conditioning 函数中被隐式使用。
-
-
-与 StyleID 的关系StyleID 的创新之处在于它利用了扩散模型内部的注意力机制来实现风格迁移，而不需要额外训练。这依赖于加载完整的预训练 Stable Diffusion 模型，包括：
-
-自编码器 (使用 Taming Transformers 的组件)：负责将图像压缩到潜在空间和从潜在空间重建图像。
-条件机制 (使用 CLIP)：即使使用空提示，模型的条件处理管道仍需要 CLIP 组件。
-U-Net 扩散模型：StyleID 的核心创新在于操纵 U-Net 中的注意力层的查询、键和值向量。
-
-总的来说，这两个库是 Stable Diffusion 生态系统的关键组成部分，虽然 StyleID 的核心创新不直接依赖于它们的独特功能，但作为整个模型架构的一部分，它们是完整功能实现所必需的。
-核心关系解析Stable Diffusion 是 Latent Diffusion Model 的一个特定实现，而 StyleID 则是在此基础上开发的一种应用方法。它们的关系可以理解为：
-
-Latent Diffusion Model (LDM) 是基础架构，它在压缩的潜在空间而非像素空间中进行扩散过程，提高了计算效率。
-Stable Diffusion 是 LDM 的一个大规模实现，通过在大量数据上预训练得到的模型。
-StyleID 是一种利用预训练好的 Stable Diffusion 模型进行风格迁移的方法，无需额外训练。
-
-所以按理说原论文中的核心网络主要是运用了DDIM，但是这个DDIM是在stable difussion中预训练好的，所以说采用了stable difussion？
-关于UNet和DDIM的提问首先，有几点需要纠正：
-
-U-Net的角色：U-Net不仅在训练时使用，在推理&#x2F;采样阶段同样重要。在扩散模型中，U-Net是预测噪声的核心网络，无论是训练还是推理都需要它。
-DDIM的作用：DDIM确实是一种采样方法，但它同样依赖U-Net来预测噪声。在论文的实现中，DDIM被用于两个目的：反向过程(inversion)和生成过程(generation)。
-
-关于save_feature_maps函数，它并不是只获取第一个输入模块的attention。让我们详细分析代码：
-def save_feature_maps(blocks, i, feature_type=&quot;input_block&quot;):    block_idx = 0    for block_idx, block in enumerate(blocks):        if len(block) &gt; 1 and &quot;SpatialTransformer&quot; in str(type(block[1])):            if block_idx in self_attn_output_block_indices:                # self-attn                q = block[1].transformer_blocks[0].attn1.q                k = block[1].transformer_blocks[0].attn1.k                v = block[1].transformer_blocks[0].attn1.v                save_feature_map(q, f&quot;&#123;feature_type&#125;_&#123;block_idx&#125;_self_attn_q&quot;, i)                save_feature_map(k, f&quot;&#123;feature_type&#125;_&#123;block_idx&#125;_self_attn_k&quot;, i)                save_feature_map(v, f&quot;&#123;feature_type&#125;_&#123;block_idx&#125;_self_attn_v&quot;, i)
-
-这个函数实际上是在遍历U-Net的所有块(blocks)，并且寻找那些包含”SpatialTransformer”的块(即含有注意力机制的块)。然后，它会检查该块的索引是否在self_attn_output_block_indices中，这个变量在代码中定义为：
-self_attn_output_block_indices = list(map(int, opt.attn_layer.split(&#x27;,&#x27;)))
-
-而默认的attn_layer参数是：
-parser.add_argument(&quot;--attn_layer&quot;, type=str, default=&#x27;6,7,8,9,10,11&#x27;, help=&#x27;injection attention feature layers&#x27;)
-
-这意味着代码默认会提取U-Net的decoder部分的6-11层(即后期层)的self-attention特征。这些层被认为主要负责局部纹理等风格相关的特征。
-另外，关于你提到的函数参数feature_type=&quot;input_block&quot;，这只是用来命名保存的特征，并不表示只提取输入块的特征。实际上，代码中调用此函数时使用了：
-save_feature_maps(unet_model.output_blocks, i, &quot;output_block&quot;)
-
-这清楚地表明它提取的是U-Net的output_blocks(decoder部分)中的attention特征。
-总结来说：
-
-这种风格注入方法在U-Net的decoder部分(output_blocks)的多个层中进行，具体是第6-11层
-操作发生在DDIM的反向扩散过程中，这个过程仍然使用U-Net来预测噪声
-注意力特征的替换只针对特定的层，这些层被认为对纹理和风格表现更为重要
-
-这种精心设计的方法允许模型在保留内容结构的同时有效地转移风格特征。
-DDIM过程的理解实际上，在扩散模型中有两种主要的过程：
-
-**正向扩散过程(Forward Diffusion)**：将清晰图像逐步添加噪声，最终变成纯噪声
-**反向扩散过程(Reverse Diffusion)**：从纯噪声开始，逐步去噪，生成清晰图像
-
-对于扩散模型的采样，通常的流程是从随机噪声出发，通过反向扩散生成图像。DDIM是这个反向扩散过程的一种特定采样算法。
-DDIM Inversion的理解论文中使用的”DDIM inversion”是一种特殊技术，它可以看作是反向扩散过程的逆操作。也就是说，它允许我们：
-
-从真实图像开始
-重建可能产生该图像的噪声潜变量
-
-这个过程在数学上是通过反向运行DDIM采样步骤实现的，但目标变成了重建噪声而不是生成图像。
-代码中的U-Net应用关于你的核心问题：这两个过程中使用的U-Net是否相同？
-是的，使用的是同一个U-Net模型。在代码中可以看到：
-# 加载模型model = load_model_from_config(model_config, f&quot;&#123;opt.ckpt&#125;&quot;)unet_model = model.model.diffusion_model# DDIM inversion - 提取内容和风格图像特征cnt_z_enc, _ = sampler.encode_ddim(init_cnt.clone(), ...)  # 使用U-Netsty_z_enc, _ = sampler.encode_ddim(init_sty.clone(), ...)  # 使用同一个U-Net# 正向扩散/生成 - 使用提取的特征samples_ddim, intermediates = sampler.sample(...)  # 仍然使用同一个U-Net
-
-关键区别在于：
-
-DDIM Inversion：
-输入是真实图像
-输出是噪声潜变量
-在过程中收集注意力特征(Q, K, V)
-
-
-DDIM 生成：
-输入是初始化的噪声(可能通过AdaIN混合)
-使用先前收集的注意力特征替换&#x2F;注入模型中相应位置的特征
-输出是生成的风格化图像
-
-
-
-为什么使用这种方式？这种设计的巧妙之处在于：
-
-通过DDIM inversion将内容和风格图像映射到同一个潜在空间中
-在这个共享空间内，可以精确控制哪些特征来自内容图像，哪些来自风格图像
-最后使用相同的模型生成融合风格和内容的输出图像
-
-整个过程中，所有步骤都使用了相同的预训练U-Net模型，只是在不同阶段对其中的特征进行了操作和替换，这是这种方法无需额外训练就能实现风格迁移的关键。
-Self-Attention vs Cross-Attention: StyleID在现代扩散模型中的适用性您提出了一个非常有见地的问题。确实，Stable Diffusion的架构随着版本迭代发生了重要变化，尤其是在注意力机制的应用上。让我深入分析这个问题。
-Self-Attention与Cross-Attention的演变计算效率问题Self-Attention(SA)的计算复杂度是O(N²)，其中N是特征图的像素数。这意味着：
-
-当特征图尺寸为8×8时，需要计算64²&#x3D;4,096个注意力分数
-当特征图尺寸为32×32时，需要计算1,024²&#x3D;1,048,576个注意力分数
-当特征图尺寸为64×64时，计算量急剧增加到4,096²&#x3D;16,777,216个注意力分数
-
-这种二次增长导致在高分辨率下SA的计算成本过高，因此较新的模型确实偏向于使用更多的Cross-Attention(CA)。
-现代SD模型的架构变化SD XL等较新模型的主要架构变化包括：
-
-减少了高分辨率特征图上的SA层数量
-增加了CA层的使用，利用文本特征指导图像生成
-引入了分组、窗口化注意力等优化技术
-采用了更高效的注意力变体，如Flash Attention
-
-StyleID方法在现代模型上的适用性分析潜在局限性
-可操作层减少：如您所指出，现代SD模型减少了SA层的使用，这直接限制了StyleID可操作的网络组件数量。
-计算效率挑战：即使在保留SA层的区域，处理高分辨率图像时的计算负担也会大幅增加。StyleID需要同时处理内容图像和风格图像的特征，计算压力更大。
-分辨率扩展性：StyleID在SD 1.4上针对64×64的潜在空间（对应512×512像素输出）进行了优化。当扩展到768×768或更高分辨率时，性能可能会受到影响。
-
-为何依然有价值尽管有这些挑战，StyleID的方法仍具有重要价值：
-
-概念创新：StyleID证明了通过操作注意力层的QKV向量可以实现高质量风格迁移，这一概念可以扩展到其他注意力变体。
-无训练优势：即使在较新的模型上，无需训练的风格迁移方法仍然具有巨大的实用价值。
-底层机制探索：StyleID揭示了扩散模型内部表征的属性，这些发现对理解和改进扩散模型非常有价值。
-
-可能的改进方向要使StyleID适应现代更高分辨率的扩散模型，可以考虑：
-
-扩展到CA层：研究如何将KV替换方法从SA扩展到CA层，利用两种注意力机制的互补优势。
-局部注意力优化：采用窗口化注意力或其他局部注意力变体，降低高分辨率下的计算成本。
-分层策略优化：为不同分辨率的层设计特定的操作策略，而非简单地应用相同的KV替换。
-混合架构设计：结合StyleID的注意力操作与其他方法（如AdaIN或特征转换）的优势。
-
-技术演进的启示这种从SA到CA的架构演进反映了AI模型设计中常见的权衡考量：计算效率与模型能力之间的平衡。StyleID的方法虽然在早期SD模型上表现出色，但确实需要适应架构演进来保持其在高分辨率图像上的有效性。
-值得注意的是，即使在最新的SD模型中，底层分辨率特征图上的SA层通常仍被保留，因为它们的计算成本相对可控。这意味着StyleID的核心思想仍然可以应用，只是需要更加精细地选择操作的层级和范围。
-将StyleID的方法与现代扩散模型架构相结合，可能会开辟更高效、更高质量的风格迁移新途径。这也是扩散模型研究中一个非常有价值的探索方向。
-temperature scaling
-]]></content>
-      <categories>
-        <category>科研</category>
-      </categories>
-      <tags>
-        <tag>论文阅读</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>AI4S平台操作指南</title>
     <url>/2025/06/26/AI4S/</url>
     <content><![CDATA[步骤 1: 删除 .conda 和 .condarc 目录cd ~rm -rf .conda .condarc
@@ -366,32 +209,236 @@ chmod +x .git/hooks/pre-commit]]></content>
       </tags>
   </entry>
   <entry>
-    <title>关于DDPM的一些疑惑</title>
-    <url>/2025/06/26/%E5%85%B3%E4%BA%8EDDPM%E7%9A%84%E4%B8%80%E4%BA%9B%E7%96%91%E6%83%91/</url>
-    <content><![CDATA[在DDPM当中，也存在着一个类似于VAE的ELBO，我们需要优化他，表现为：
+    <title>StyID学习与提问</title>
+    <url>/2025/06/26/StyID/</url>
+    <content><![CDATA[Taming Transformers 的作用Taming Transformers 是 CompVis 团队开发的一个库，它包含了 VQ-GAN (Vector Quantized Generative Adversarial Network) 的实现。在 StyleID 项目中，它的主要作用有：
 
-其中给关于最后一项的优化我在这里在此复述一下思路：下面的q首先需要拿贝叶斯公式进行推导（因为是反向的，x_0不可以去掉）：
+向量量化技术: 你可以看到在 autoencoder.py 中引入了 VectorQuantizer 组件：
+ from taming.modules.vqvae.quantize import VectorQuantizer2 as VectorQuantizer
+ 这个组件在 VQModel 类中被用作自编码器的一部分，用于实现潜在空间的离散化。
 
-因此我们可以完全写出正态分布函数的参数：
+自编码器架构: Stable Diffusion 的第一阶段模型 (自编码器) 在架构设计上借鉴了 Taming Transformers 的思想，用于高效地压缩图像到潜在空间。
 
-由先验知识我们知道，分子p_θ应该同样遵守高斯分布，所以我们假设他服从一个高斯分布，并且假设他的方差服从q反向传导的方差，这样，KL散度的计算就可以被简化为期望的L2：
-
-接下来，如果我们将p当中的期望项也写成和q一样的格式，但是将x_0替换为我们想要生成的x_θ，然后，又有之前按Markov Chain的推导，我们可以将期望完全写成x_t和一个分布噪声之和的形式，这便是原文当中损失函数的推导：
+感知损失函数: Taming Transformers 提供了一些复杂的损失函数实现，这些在训练高质量的图像生成模型时非常重要。虽然 StyleID 是免训练的方法，但它使用的预训练模型在训练时可能使用了这些损失函数。
 
 
-这是我觉得DDPM当中比较难以理解的部分，其他的其实还是很好理解的。关于中间那个式子，再预测出ε_θ其实就很好解决了。
-所以在理解了这个之后，其实也就明白了，为什么训练的过程当中，我们需要神经网络预测的是那个ε_θ（是的，每一小步都要！）。生成过程主要就是下面这样：
+CLIP 的作用CLIP (Contrastive Language-Image Pre-training) 是 OpenAI 开发的一个多模态模型，它在 StyleID 中的作用包括：
 
-下面是一些实现细节Linear Noise Scheduler在正向传播的过程当中，需要用一个调度器（scheduler）来调整每一步的alpha（前大后小），貌似是线性变化的，初始实现是这样，这是第一个职责。
-另外一个职责是，给定了最终的噪声图像x_T，以及预测的分布ε，就可以根据之前推导的公式进行重参数化，其实我觉得本质上就是可以同时实现正反向重参数化的过程（毕竟逻辑相同）。
-T值嵌入未完待续![[截屏2025-06-27 13.00.43.png]]
+条件引导: 虽然在 StyleID 的风格迁移过程中没有直接使用文本提示，但 Stable Diffusion 模型的条件引导机制基于 CLIP 的文本编码器。在代码中：
+ uc = model.get_learned_conditioning([&quot;&quot;])
+ 这一行创建了一个无条件引导向量，本质上是使用 CLIP 的文本编码器处理空字符串。
+
+潜在表示的对齐: CLIP 在预训练过程中学习了文本和图像之间的对齐表示，这对于 Stable Diffusion 模型理解内容和风格的概念非常重要。StyleID 正是利用了这种潜在的语义理解。
+
+模型架构依赖: Stable Diffusion 的架构设计中集成了 CLIP，用于处理条件信息。即使 StyleID 不直接使用文本提示，底层模型的加载和初始化仍然需要这些组件。
+
+
+为何这两个库是必要的
+架构完整性: 即使 StyleID 可能没有直接使用这两个库的所有功能，但它们是 Stable Diffusion 模型架构的组成部分。不包含它们可能导致模型加载错误或功能不完整。
+
+环境一致性: environment.yaml 文件显示这两个库通过 git 链接安装，确保版本与 CompVis 原始实现保持一致：
+ - -e git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers- -e git+https://github.com/openai/CLIP.git@main#egg=clip
+
+内部依赖关系: 从代码中可以看出，VQModel 和 AutoencoderKL 类依赖于 Taming Transformers 中的组件。而 CLIP 可能在 model.get_learned_conditioning 函数中被隐式使用。
+
+
+与 StyleID 的关系StyleID 的创新之处在于它利用了扩散模型内部的注意力机制来实现风格迁移，而不需要额外训练。这依赖于加载完整的预训练 Stable Diffusion 模型，包括：
+
+自编码器 (使用 Taming Transformers 的组件)：负责将图像压缩到潜在空间和从潜在空间重建图像。
+条件机制 (使用 CLIP)：即使使用空提示，模型的条件处理管道仍需要 CLIP 组件。
+U-Net 扩散模型：StyleID 的核心创新在于操纵 U-Net 中的注意力层的查询、键和值向量。
+
+总的来说，这两个库是 Stable Diffusion 生态系统的关键组成部分，虽然 StyleID 的核心创新不直接依赖于它们的独特功能，但作为整个模型架构的一部分，它们是完整功能实现所必需的。
+核心关系解析Stable Diffusion 是 Latent Diffusion Model 的一个特定实现，而 StyleID 则是在此基础上开发的一种应用方法。它们的关系可以理解为：
+
+Latent Diffusion Model (LDM) 是基础架构，它在压缩的潜在空间而非像素空间中进行扩散过程，提高了计算效率。
+Stable Diffusion 是 LDM 的一个大规模实现，通过在大量数据上预训练得到的模型。
+StyleID 是一种利用预训练好的 Stable Diffusion 模型进行风格迁移的方法，无需额外训练。
+
+所以按理说原论文中的核心网络主要是运用了DDIM，但是这个DDIM是在stable difussion中预训练好的，所以说采用了stable difussion？
+关于UNet和DDIM的提问首先，有几点需要纠正：
+
+U-Net的角色：U-Net不仅在训练时使用，在推理&#x2F;采样阶段同样重要。在扩散模型中，U-Net是预测噪声的核心网络，无论是训练还是推理都需要它。
+DDIM的作用：DDIM确实是一种采样方法，但它同样依赖U-Net来预测噪声。在论文的实现中，DDIM被用于两个目的：反向过程(inversion)和生成过程(generation)。
+
+关于save_feature_maps函数，它并不是只获取第一个输入模块的attention。让我们详细分析代码：
+def save_feature_maps(blocks, i, feature_type=&quot;input_block&quot;):    block_idx = 0    for block_idx, block in enumerate(blocks):        if len(block) &gt; 1 and &quot;SpatialTransformer&quot; in str(type(block[1])):            if block_idx in self_attn_output_block_indices:                # self-attn                q = block[1].transformer_blocks[0].attn1.q                k = block[1].transformer_blocks[0].attn1.k                v = block[1].transformer_blocks[0].attn1.v                save_feature_map(q, f&quot;&#123;feature_type&#125;_&#123;block_idx&#125;_self_attn_q&quot;, i)                save_feature_map(k, f&quot;&#123;feature_type&#125;_&#123;block_idx&#125;_self_attn_k&quot;, i)                save_feature_map(v, f&quot;&#123;feature_type&#125;_&#123;block_idx&#125;_self_attn_v&quot;, i)
+
+这个函数实际上是在遍历U-Net的所有块(blocks)，并且寻找那些包含”SpatialTransformer”的块(即含有注意力机制的块)。然后，它会检查该块的索引是否在self_attn_output_block_indices中，这个变量在代码中定义为：
+self_attn_output_block_indices = list(map(int, opt.attn_layer.split(&#x27;,&#x27;)))
+
+而默认的attn_layer参数是：
+parser.add_argument(&quot;--attn_layer&quot;, type=str, default=&#x27;6,7,8,9,10,11&#x27;, help=&#x27;injection attention feature layers&#x27;)
+
+这意味着代码默认会提取U-Net的decoder部分的6-11层(即后期层)的self-attention特征。这些层被认为主要负责局部纹理等风格相关的特征。
+另外，关于你提到的函数参数feature_type=&quot;input_block&quot;，这只是用来命名保存的特征，并不表示只提取输入块的特征。实际上，代码中调用此函数时使用了：
+save_feature_maps(unet_model.output_blocks, i, &quot;output_block&quot;)
+
+这清楚地表明它提取的是U-Net的output_blocks(decoder部分)中的attention特征。
+总结来说：
+
+这种风格注入方法在U-Net的decoder部分(output_blocks)的多个层中进行，具体是第6-11层
+操作发生在DDIM的反向扩散过程中，这个过程仍然使用U-Net来预测噪声
+注意力特征的替换只针对特定的层，这些层被认为对纹理和风格表现更为重要
+
+这种精心设计的方法允许模型在保留内容结构的同时有效地转移风格特征。
+DDIM过程的理解实际上，在扩散模型中有两种主要的过程：
+
+**正向扩散过程(Forward Diffusion)**：将清晰图像逐步添加噪声，最终变成纯噪声
+**反向扩散过程(Reverse Diffusion)**：从纯噪声开始，逐步去噪，生成清晰图像
+
+对于扩散模型的采样，通常的流程是从随机噪声出发，通过反向扩散生成图像。DDIM是这个反向扩散过程的一种特定采样算法。
+DDIM Inversion的理解论文中使用的”DDIM inversion”是一种特殊技术，它可以看作是反向扩散过程的逆操作。也就是说，它允许我们：
+
+从真实图像开始
+重建可能产生该图像的噪声潜变量
+
+这个过程在数学上是通过反向运行DDIM采样步骤实现的，但目标变成了重建噪声而不是生成图像。
+代码中的U-Net应用关于你的核心问题：这两个过程中使用的U-Net是否相同？
+是的，使用的是同一个U-Net模型。在代码中可以看到：
+# 加载模型model = load_model_from_config(model_config, f&quot;&#123;opt.ckpt&#125;&quot;)unet_model = model.model.diffusion_model# DDIM inversion - 提取内容和风格图像特征cnt_z_enc, _ = sampler.encode_ddim(init_cnt.clone(), ...)  # 使用U-Netsty_z_enc, _ = sampler.encode_ddim(init_sty.clone(), ...)  # 使用同一个U-Net# 正向扩散/生成 - 使用提取的特征samples_ddim, intermediates = sampler.sample(...)  # 仍然使用同一个U-Net
+
+关键区别在于：
+
+DDIM Inversion：
+输入是真实图像
+输出是噪声潜变量
+在过程中收集注意力特征(Q, K, V)
+
+
+DDIM 生成：
+输入是初始化的噪声(可能通过AdaIN混合)
+使用先前收集的注意力特征替换&#x2F;注入模型中相应位置的特征
+输出是生成的风格化图像
+
+
+
+为什么使用这种方式？这种设计的巧妙之处在于：
+
+通过DDIM inversion将内容和风格图像映射到同一个潜在空间中
+在这个共享空间内，可以精确控制哪些特征来自内容图像，哪些来自风格图像
+最后使用相同的模型生成融合风格和内容的输出图像
+
+整个过程中，所有步骤都使用了相同的预训练U-Net模型，只是在不同阶段对其中的特征进行了操作和替换，这是这种方法无需额外训练就能实现风格迁移的关键。
+Self-Attention vs Cross-Attention: StyleID在现代扩散模型中的适用性您提出了一个非常有见地的问题。确实，Stable Diffusion的架构随着版本迭代发生了重要变化，尤其是在注意力机制的应用上。让我深入分析这个问题。
+Self-Attention与Cross-Attention的演变计算效率问题Self-Attention(SA)的计算复杂度是O(N²)，其中N是特征图的像素数。这意味着：
+
+当特征图尺寸为8×8时，需要计算64²&#x3D;4,096个注意力分数
+当特征图尺寸为32×32时，需要计算1,024²&#x3D;1,048,576个注意力分数
+当特征图尺寸为64×64时，计算量急剧增加到4,096²&#x3D;16,777,216个注意力分数
+
+这种二次增长导致在高分辨率下SA的计算成本过高，因此较新的模型确实偏向于使用更多的Cross-Attention(CA)。
+现代SD模型的架构变化SD XL等较新模型的主要架构变化包括：
+
+减少了高分辨率特征图上的SA层数量
+增加了CA层的使用，利用文本特征指导图像生成
+引入了分组、窗口化注意力等优化技术
+采用了更高效的注意力变体，如Flash Attention
+
+StyleID方法在现代模型上的适用性分析潜在局限性
+可操作层减少：如您所指出，现代SD模型减少了SA层的使用，这直接限制了StyleID可操作的网络组件数量。
+计算效率挑战：即使在保留SA层的区域，处理高分辨率图像时的计算负担也会大幅增加。StyleID需要同时处理内容图像和风格图像的特征，计算压力更大。
+分辨率扩展性：StyleID在SD 1.4上针对64×64的潜在空间（对应512×512像素输出）进行了优化。当扩展到768×768或更高分辨率时，性能可能会受到影响。
+
+为何依然有价值尽管有这些挑战，StyleID的方法仍具有重要价值：
+
+概念创新：StyleID证明了通过操作注意力层的QKV向量可以实现高质量风格迁移，这一概念可以扩展到其他注意力变体。
+无训练优势：即使在较新的模型上，无需训练的风格迁移方法仍然具有巨大的实用价值。
+底层机制探索：StyleID揭示了扩散模型内部表征的属性，这些发现对理解和改进扩散模型非常有价值。
+
+可能的改进方向要使StyleID适应现代更高分辨率的扩散模型，可以考虑：
+
+扩展到CA层：研究如何将KV替换方法从SA扩展到CA层，利用两种注意力机制的互补优势。
+局部注意力优化：采用窗口化注意力或其他局部注意力变体，降低高分辨率下的计算成本。
+分层策略优化：为不同分辨率的层设计特定的操作策略，而非简单地应用相同的KV替换。
+混合架构设计：结合StyleID的注意力操作与其他方法（如AdaIN或特征转换）的优势。
+
+技术演进的启示这种从SA到CA的架构演进反映了AI模型设计中常见的权衡考量：计算效率与模型能力之间的平衡。StyleID的方法虽然在早期SD模型上表现出色，但确实需要适应架构演进来保持其在高分辨率图像上的有效性。
+值得注意的是，即使在最新的SD模型中，底层分辨率特征图上的SA层通常仍被保留，因为它们的计算成本相对可控。这意味着StyleID的核心思想仍然可以应用，只是需要更加精细地选择操作的层级和范围。
+将StyleID的方法与现代扩散模型架构相结合，可能会开辟更高效、更高质量的风格迁移新途径。这也是扩散模型研究中一个非常有价值的探索方向。
+temperature scaling
 ]]></content>
       <categories>
         <category>科研</category>
       </categories>
       <tags>
-        <tag>知识积累</tag>
+        <tag>论文阅读</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>TSD-SR阅读笔记</title>
+    <url>/2025/06/30/TSD-SR%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/</url>
+    <content><![CDATA[论文阅读笔记：《TSD-SR: One-Step Diffusion with Target Score Distillation for Real-World Image Super-Resolution》论文核心思想本文提出了一种名为 TSD-SR 的新颖框架，旨在将强大的预训练文本到图像（T2I）扩散模型蒸馏成一个高效且有效的 单步 真实世界图像超分辨率（Real-ISR）模型。其核心思想是通过新颖的 目标分数蒸馏（TSD） 和 分布感知采样模块（DASM），解决现有蒸馏方法在应用于超分辨率任务时的性能瓶颈，从而在实现极快推理速度的同时，达到甚至超越许多复杂多步模型的图像恢复质量。
+模型解决了什么问题？该模型主要针对现有基于扩散模型的超分辨率方法中存在的两大痛点：
+
+多步模型的效率低下：大多数利用扩散模型先验的Real-ISR方法，由于其固有的迭代去噪特性，需要20-50步的推理过程，导致计算成本高昂，速度远不及GAN等单步方法。
+现有单步蒸馏方法的性能局限：虽然已有工作尝试将扩散模型蒸馏为单步或少步，但它们在图像恢复和细节生成方面的表现并不尽如人意。本文作者发现，这主要是因为直接套用变分分数蒸馏（VSD） 到Real-ISR任务中存在两个关键缺陷：
+不可靠的梯度方向：VSD依赖教师模型提供优化方向，但在训练初期，当学生模型生成的图像质量较差时，教师模型提供的梯度方向并不可靠，这会导致生成结果出现视觉伪影。
+细节恢复能力不足：VSD损失在不同时间步（timestep）上的变化很大。传统的VSD框架采用均匀采样策略来选择时间步，这会导致对细节恢复至关重要的早期时间步的梯度被稀释，使得模型难以学习恢复精细纹理。
+
+
+
+
+方法 (Methodology)为了解决上述问题，TSD-SR引入了两个核心组件：TSD Loss 和 DASM。
+1. TSD Loss (目标分数蒸馏损失)TSD Loss是一种为学生模型提供稳定可靠梯度的组合损失函数。其目的是在VSD的基础上，引入一个更可靠的监督信号来指导优化。
+其梯度公式如下：$$\nabla_{\theta}\mathcal{L}{TSD}(\hat{z},z,c{y})&#x3D;\mathbb{E}{t,\epsilon}[w(t)[\epsilon{\psi}(\hat{z}{t};t,c{y}) - \epsilon_{\psi}(z_{t};t,c_{y}) + \lambda(\epsilon_{\psi}(z_{t};t,c_{y}) - \epsilon_{\phi}(\hat{z}{t};t,c{y}))]\frac{\partial\hat{z}}{\partial\theta}]$$
+这个损失由两部分构成：
+
+目标分数匹配 (TSM): $\epsilon_{\psi}(\hat{z}{t};t,c{y}) - \epsilon_{\psi}(z_{t};t,c_{y})$&#96;
+
+作用：该项强制让教师模型($\epsilon_{\psi}$)对“学生生成的含噪潜变量”($\hat{z}{t}$)和“真实高清图像的含噪潜变量”($z{t}$)的预测尽可能保持一致。这相当于提供了一个来自真实数据分布的“锚点”，为优化提供了更可靠的方向，有效避免了伪影和过平滑问题。
+
+
+变分分数蒸馏 (VSD): $\lambda(\epsilon_{\psi}(z_{t};t,c_{y}) - \epsilon_{\phi}(\hat{z}{t};t,c{y}))$
+
+作用：该项是经典VSD的变体，旨在将教师模型($\epsilon_{\psi}$)的知识蒸馏给可训练的LoRA模型($\epsilon_{\phi}$)，促使学生模型的分布向教师模型看齐。
+
+
+
+2. DASM (分布感知采样模块)DASM是一个为解决细节恢复不足问题而设计的采样模块。
+
+动机：它旨在克服传统均匀采样策略带来的梯度稀释问题。
+
+![][4.png]
+
+结构与流程：
+DASM首先像常规方法一样，通过加噪得到一个初始的含噪样本 $\hat{z}_{t}$。
+接着，它不再止步于此，而是利用LoRA模型($\epsilon_{\phi}$)进行多步迭代式的“微型去噪”，从而生成一系列沿着真实扩散采样轨迹的含噪样本 ($\hat{z}{t-1}, \hat{z}{t-2}, \dots$)。
+在一次训练迭代中，所有这些由DASM生成的样本都会被用来计算TSD损失，并将它们的梯度累积起来，共同更新学生模型。
+
+
+优势：通过这种方式，DASM在一次迭代中就强化了对细节恢复至关重要的早期时间步的学习，使得梯度能够更集中地用于优化细节生成，有效提升了图像的清晰度和真实感。![][3.png]
+
+训练与推理 (Training and Inference)训练策略模型的训练是一个知识蒸馏过程，交替更新两个主要部分：
+
+学生模型 ($G_{\theta}$) 的更新：
+
+使用一个组合损失进行优化，该损失由重建损失和正则化损失构成。
+重建损失 ($\mathcal{L}_{Rec}$): 保证基础内容正确，由像素空间的LPIPS损失和潜空间的MSE损失组成。
+正则化损失 ($\mathcal{L}_{Reg}$): 即前述的TSD损失，用于提升真实感。该损失的计算利用了DASM生成的系列样本。
+
+
+LoRA模型 ($\epsilon_{\phi}$) 的更新：
+
+作为VSD框架的一部分，这个可训练的教师副本需要被独立更新。
+它通过一个扩散损失 ($\mathcal{L}_{Diff}$) 进行训练，目标是让其去噪能力与原版教师模型保持一致。
+
+
+
+推理策略推理过程极为简洁高效：
+
+单步完成：模型的核心优势在于它是单步的。
+流程：输入一张低质量图像，训练好的学生模型$G_{\theta}$在一次前向传播中即可直接输出高质量的超分辨率结果。
+高效性：这使得其推理速度非常快，远超需要迭代计算的多步模型，在性能和效率之间取得了极佳的平衡。
+
+总结与个人看法TSD-SR是一篇目标明确、方法创新的优秀工作。它精准地指出了VSD框架在应用于Real-ISR任务时的具体缺陷，并为此设计了两个针对性的解决方案：TSD Loss和DASM。
+
+贡献清晰：TSD Loss通过引入真实数据作为锚点，解决了VSD梯度不可靠的问题；DASM通过模拟采样轨迹累积梯度，解决了均匀采样导致的细节学习不足问题。
+实验充分：论文中的消融实验有力地证明了每个组件的有效性，并且在多个基准测试中，其单步模型的性能指标和视觉效果均表现出强大的竞争力。
+启发性：这项工作为如何将大型生成模型的能力高效地蒸馏到特定下游任务中提供了一个很好的范例。它表明，简单地套用现有框架可能效果不佳，深入分析任务特性并进行针对性地改进才是关键。
+
+总而言之，TSD-SR不仅提供了一个实用、高效的超分辨率工具，也为未来相关领域的研究提供了宝贵的思路。
+]]></content>
   </entry>
   <entry>
     <title>Hello World</title>
@@ -410,5 +457,33 @@ Deploy to remote sites$ hexo deploy
 
 More info: Deployment
 ]]></content>
+  </entry>
+  <entry>
+    <title>关于DDPM的一些疑惑</title>
+    <url>/2025/06/26/%E5%85%B3%E4%BA%8EDDPM%E7%9A%84%E4%B8%80%E4%BA%9B%E7%96%91%E6%83%91/</url>
+    <content><![CDATA[在DDPM当中，也存在着一个类似于VAE的ELBO，我们需要优化他，表现为：
+
+其中给关于最后一项的优化我在这里在此复述一下思路：下面的q首先需要拿贝叶斯公式进行推导（因为是反向的，x_0不可以去掉）：
+
+因此我们可以完全写出正态分布函数的参数：
+
+由先验知识我们知道，分子p_θ应该同样遵守高斯分布，所以我们假设他服从一个高斯分布，并且假设他的方差服从q反向传导的方差，这样，KL散度的计算就可以被简化为期望的L2：
+
+接下来，如果我们将p当中的期望项也写成和q一样的格式，但是将x_0替换为我们想要生成的x_θ，然后，又有之前按Markov Chain的推导，我们可以将期望完全写成x_t和一个分布噪声之和的形式，这便是原文当中损失函数的推导：
+
+
+这是我觉得DDPM当中比较难以理解的部分，其他的其实还是很好理解的。关于中间那个式子，再预测出ε_θ其实就很好解决了。
+所以在理解了这个之后，其实也就明白了，为什么训练的过程当中，我们需要神经网络预测的是那个ε_θ（是的，每一小步都要！）。生成过程主要就是下面这样：
+
+下面是一些实现细节Linear Noise Scheduler在正向传播的过程当中，需要用一个调度器（scheduler）来调整每一步的alpha（前大后小），貌似是线性变化的，初始实现是这样，这是第一个职责。
+另外一个职责是，给定了最终的噪声图像x_T，以及预测的分布ε，就可以根据之前推导的公式进行重参数化，其实我觉得本质上就是可以同时实现正反向重参数化的过程（毕竟逻辑相同）。
+T值嵌入未完待续
+]]></content>
+      <categories>
+        <category>科研</category>
+      </categories>
+      <tags>
+        <tag>知识积累</tag>
+      </tags>
   </entry>
 </search>
