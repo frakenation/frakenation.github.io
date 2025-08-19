@@ -1,136 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>AI4S平台操作指南</title>
-    <url>/2025/06/26/AI4S/</url>
-    <content><![CDATA[步骤 1: 删除 .conda 和
-.condarc 目录
-cd ~rm -rf .conda .condarc
-步骤 2:
-使用bashrc_backup.txt替换原始.bashrc文件
-首先，我们需要从第117行开始替换您的.bashrc文件。查看您提供的文件，第117行开始的内容是conda初始化部分：
-cd ~# 先备份原始.bashrccp .bashrc .bashrc.old# 保留原始.bashrc的前116行head -n 116 .bashrc.old &gt; .bashrc# 从bashrc_backup.txt的第117行开始追加到.bashrctail -n +117 /home/bml/storage/mnt/v-7c231cc5f5054b0a/org/envs/bashrc_backup.txt &gt;&gt; .bashrc
-步骤 3: 运行source
-.bashrc激活新的conda
-source ~/.bashrc
-这一步将加载新的bashrc配置，包括更新的conda路径。您应该会看到三行”Save
-your data in /home/bml/storage directory !!!“的提示信息。
-步骤 4: 使用新conda中的环境
-新的conda路径被设置为/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/miniconda3/bin。您可以列出并使用新的conda环境：
-# 查看可用的conda环境conda env list# 激活特定环境（以&quot;myenv&quot;为例）conda activate myenv
-如果您想使用/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/envs/中的特定环境，可以这样操作：
-# 激活特定路径下的环境conda activate /home/bml/storage/mnt/v-7c231cc5f5054b0a/org/envs/环境名称
-完成这些步骤后，您的conda环境应该已经被重置并指向了新的路径。您可以通过which conda命令验证conda的路径是否正确更新。
-计算PSNR和SSIM的程序
-python evaluate.py
-–pred_dir
-/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/sim_deblur_multi_system/output_difftrain_1500
-–gt_dir
-/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/sim_deblur_multi_system/Test_div100/gt
-–ext png
-–pred_prefix deblur_
-scp -p 15022 “0: downloadladdsr.zip” juegong@180.169.75.62:/data2/user/juegong/AddsR
-在 Linux 终端中使用 screen
-是一种非常实用的方式来创建和管理多个会话，尤其适合远程连接、长期运行任务等场景。以下是创建和使用
-screen 的基本操作：
-
-🔧 安装 screen（如果尚未安装）
-Debian/Ubuntu 系：
-sudo apt updatesudo apt install screen
-Red Hat/CentOS 系：
-sudo yum install screen
-
-🚀 创建新的 screen 会话
-screen -S 会话名称
-示例：
-screen -S mysession
-
-🧩 常用操作命令
-
-
-
-操作
-命令
-
-
-
-
-创建新会话
-screen -S 名称
-
-
-查看所有会话
-screen -ls
-
-
-恢复某个会话
-screen -r 名称或ID
-
-
-暂时离开（detach）当前会话
-Ctrl + A 然后按 D
-
-
-销毁会话
-在会话中输入 exit 或关闭终端窗口
-
-
-强制接管会话
-screen -d -r 名称或ID
-
-
-
-
-💡 提示
-
-多个 screen 会话可以并行存在。
-即使你退出终端，screen 中运行的程序依然会继续运行。
-进入 screen 后的命令操作与普通终端完全一致。
-
-
-如果你需要在 screen 里运行特定脚本或程序，也可以直接这样：
-screen -S mytask bash myscript.sh
-需要我帮你设置自动启动 screen 或写个脚本吗？
-在 Linux 终端中删除一个 Conda 环境，可以按照下面的步骤操作：
-
-🧹 删除 Conda 环境的命令
-conda remove --name 环境名 --all
-示例：
-conda remove --name myenv --all
-这条命令的含义是：移除名为 myenv 的 conda 环境中的
-所有内容，并彻底删除该环境。
-
-🧾 查看已有的 Conda 环境
-如果你不确定环境的名称，可以先查看：
-conda env list
-或：
-conda info --envs
-输出会显示你所有的环境，当前活跃的环境前会有一个星号 *
-标记。
-CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7," accelerate launch train_seesr.py \
-–pretrained_model_name_or_path=“/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/checkpoint/SeeSR/stable-diffusion-2-base”
-–output_dir=“./experience/seesr1500”
-–root_folders
-‘/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/Multi_System/train_6000’
-–ram_ft_path
-‘/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/Multi_System/SeeSR-main/preset/models/DAPE.pth’
-–enable_xformers_memory_efficient_attention
-–mixed_precision=“fp16”
-–resolution=512
-–learning_rate=5e-5
-–train_batch_size=16
-–gradient_accumulation_steps=2
-–null_text_ratio=0.5 –dataloader_num_workers=0
-–checkpointing_steps=10000
-]]></content>
-      <categories>
-        <category>科研</category>
-      </categories>
-      <tags>
-        <tag>操作指南</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>StyID学习与提问</title>
     <url>/2025/06/26/StyID/</url>
     <content><![CDATA[Taming Transformers 的作用
@@ -343,7 +213,10 @@ scaling
     <content><![CDATA[论文阅读笔记：《TSD-SR:
 One-Step Diffusion with Target Score Distillation for Real-World Image
 Super-Resolution》
- ##
+
+
+图片
+
 论文核心思想
 本文提出了一种名为 TSD-SR
 的新颖框架，旨在将强大的预训练文本到图像（T2I）扩散模型蒸馏成一个高效且有效的
@@ -362,7 +235,8 @@ Super-Resolution》
 细节恢复能力不足：VSD损失在不同时间步（timestep）上的变化很大。传统的VSD框架采用均匀采样策略来选择时间步，这会导致对细节恢复至关重要的早期时间步的梯度被稀释，使得模型难以学习恢复精细纹理。
 
 
- ## 方法 (Methodology)
+
+方法 (Methodology)
 为了解决上述问题，TSD-SR引入了两个核心组件：TSD Loss 和 DASM。
 1. TSD Loss (目标分数蒸馏损失)
 TSD
@@ -423,6 +297,9 @@ Inference)
 。其速度优势源于直接从低质量图像数据去噪并采用固定的文本提示（prompt）。
 
 
+
+图片
+
 训练策略 (Training Strategy)
 该模型的训练策略相对复杂，其目标是将一个强大的预训练多步扩散模型（教师模型）的知识蒸馏到一个高效的单步学生模型中。整个过程可以参考论文第17页的算法，主要包含以下几个关键部分：
 1. 初始化
@@ -470,12 +347,14 @@ B. LoRA模型 (ϵϕ​) 的更新
 通过在训练中不断重复这两个更新步骤，模型最终学会了在单步内生成高质量、细节丰富的超分辨率图像。
 总结与个人看法
 读完有几个疑问亟待解决： - 在训练初期教师模型对于ẑ0的预测一开始其实是不准确的，从那一张余弦相似度的图片其实就能看出来，那么为什么采用了TSD-Loss之后就可以？
-&gt;核心思想:
+
+核心思想:
 该部分的核心思想是，对于来自同一分布的样本，教师模型 (ϵψ​)
 预测出的真实分数应该是相近的。它通过比对教师模型对“合成的含噪潜变量”ẑt和“高质量的含噪潜变量”zt
 的预测，来鼓励两者之间的预测结果保持一致
 。这提供了一个更可靠的优化方向，特别是当初始生成的图像质量不高时，可以有效避免模型陷入视觉伪影或生成过度平滑的结果
 。
+
 其实这一点或许就是为了避免生成artifacts，或者理解，教师模型认不出来复原模型生成的结果。
 
 但是为什么TSD的效果比OSEDiff更好，按照对于原文的理解，或许是因为他采用了一个更加牛逼的VSD-Loss，因为他用了DASM模块，计算了多个时间步的VSD对Loss进行贡献。究其原因是因为在不同的时间步，扩散模型解决的问题不一样，在越小的时间步也就是越接近ẑ0时越会专注于细节的生成，然而OSEDiff在所有的时间步是均匀采样的，这就导致一个问题，当采用均匀采样时，模型在大多数情况下会采到属于Stage
@@ -515,59 +394,6 @@ Deploy to remote sites
 $ hexo deploy
 More info: Deployment
 ]]></content>
-  </entry>
-  <entry>
-    <title>关于DDPM的一些疑惑</title>
-    <url>/2025/06/26/%E5%85%B3%E4%BA%8EDDPM%E7%9A%84%E4%B8%80%E4%BA%9B%E7%96%91%E6%83%91/</url>
-    <content><![CDATA[在DDPM当中，也存在着一个类似于VAE的ELBO，我们需要优化他，表现为：
-
-
-图片
-
-其中给关于最后一项的优化我在这里在此复述一下思路：下面的q首先需要拿贝叶斯公式进行推导（因为是反向的，x_0不可以去掉）：
-
-
-图片
-
-因此我们可以完全写出正态分布函数的参数：
-
-
-图片
-
-由先验知识我们知道，分子p_θ应该同样遵守高斯分布，所以我们假设他服从一个高斯分布，并且假设他的方差服从q反向传导的方差，这样，KL散度的计算就可以被简化为期望的L2：
-
-
-图片
-
-接下来，如果我们将p当中的期望项也写成和q一样的格式，但是将x_0替换为我们想要生成的x_θ，然后，又有之前按Markov
-Chain的推导，我们可以将期望完全写成x_t和一个分布噪声之和的形式，这便是原文当中损失函数的推导：
-
-
-图片
-
-
-
-图片
-
-这是我觉得DDPM当中比较难以理解的部分，其他的其实还是很好理解的。关于中间那个式子，再预测出ε_θ其实就很好解决了。
-所以在理解了这个之后，其实也就明白了，为什么训练的过程当中，我们需要神经网络预测的是那个ε_θ（是的，每一小步都要！）。生成过程主要就是下面这样：
-
-
-图片
-
-下面是一些实现细节
-Linear Noise Scheduler
-在正向传播的过程当中，需要用一个调度器（scheduler）来调整每一步的alpha（前大后小），貌似是线性变化的，初始实现是这样，这是第一个职责。
-另外一个职责是，给定了最终的噪声图像x_T，以及预测的分布ε，就可以根据之前推导的公式进行重参数化，其实我觉得本质上就是可以同时实现正反向重参数化的过程（毕竟逻辑相同）。
-T值嵌入
-未完待续
-]]></content>
-      <categories>
-        <category>科研</category>
-      </categories>
-      <tags>
-        <tag>知识积累</tag>
-      </tags>
   </entry>
   <entry>
     <title>深度学习服务器操作指南</title>
@@ -677,6 +503,189 @@ chmod +x .git/hooks/pre-commit
       </categories>
       <tags>
         <tag>操作指南</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>AI4S平台操作指南</title>
+    <url>/2025/06/26/AI4S/</url>
+    <content><![CDATA[步骤 1: 删除 .conda 和
+.condarc 目录
+cd ~rm -rf .conda .condarc
+步骤 2:
+使用bashrc_backup.txt替换原始.bashrc文件
+首先，我们需要从第117行开始替换您的.bashrc文件。查看您提供的文件，第117行开始的内容是conda初始化部分：
+cd ~# 先备份原始.bashrccp .bashrc .bashrc.old# 保留原始.bashrc的前116行head -n 116 .bashrc.old &gt; .bashrc# 从bashrc_backup.txt的第117行开始追加到.bashrctail -n +117 /home/bml/storage/mnt/v-7c231cc5f5054b0a/org/envs/bashrc_backup.txt &gt;&gt; .bashrc
+步骤 3: 运行source
+.bashrc激活新的conda
+source ~/.bashrc
+这一步将加载新的bashrc配置，包括更新的conda路径。您应该会看到三行”Save
+your data in /home/bml/storage directory !!!“的提示信息。
+步骤 4: 使用新conda中的环境
+新的conda路径被设置为/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/miniconda3/bin。您可以列出并使用新的conda环境：
+# 查看可用的conda环境conda env list# 激活特定环境（以&quot;myenv&quot;为例）conda activate myenv
+如果您想使用/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/envs/中的特定环境，可以这样操作：
+# 激活特定路径下的环境conda activate /home/bml/storage/mnt/v-7c231cc5f5054b0a/org/envs/环境名称
+完成这些步骤后，您的conda环境应该已经被重置并指向了新的路径。您可以通过which conda命令验证conda的路径是否正确更新。
+计算PSNR和SSIM的程序
+python evaluate.py
+–pred_dir
+/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/sim_deblur_multi_system/output_difftrain_1500
+–gt_dir
+/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/sim_deblur_multi_system/Test_div100/gt
+–ext png
+–pred_prefix deblur_
+scp -p 15022 “0: downloadladdsr.zip” juegong@180.169.75.62:/data2/user/juegong/AddsR
+在 Linux 终端中使用 screen
+是一种非常实用的方式来创建和管理多个会话，尤其适合远程连接、长期运行任务等场景。以下是创建和使用
+screen 的基本操作：
+
+🔧 安装 screen（如果尚未安装）
+Debian/Ubuntu 系：
+sudo apt updatesudo apt install screen
+Red Hat/CentOS 系：
+sudo yum install screen
+
+🚀 创建新的 screen 会话
+screen -S 会话名称
+示例：
+screen -S mysession
+
+🧩 常用操作命令
+
+
+
+操作
+命令
+
+
+
+
+创建新会话
+screen -S 名称
+
+
+查看所有会话
+screen -ls
+
+
+恢复某个会话
+screen -r 名称或ID
+
+
+暂时离开（detach）当前会话
+Ctrl + A 然后按 D
+
+
+销毁会话
+在会话中输入 exit 或关闭终端窗口
+
+
+强制接管会话
+screen -d -r 名称或ID
+
+
+
+
+💡 提示
+
+多个 screen 会话可以并行存在。
+即使你退出终端，screen 中运行的程序依然会继续运行。
+进入 screen 后的命令操作与普通终端完全一致。
+
+
+如果你需要在 screen 里运行特定脚本或程序，也可以直接这样：
+screen -S mytask bash myscript.sh
+需要我帮你设置自动启动 screen 或写个脚本吗？
+在 Linux 终端中删除一个 Conda 环境，可以按照下面的步骤操作：
+
+🧹 删除 Conda 环境的命令
+conda remove --name 环境名 --all
+示例：
+conda remove --name myenv --all
+这条命令的含义是：移除名为 myenv 的 conda 环境中的
+所有内容，并彻底删除该环境。
+
+🧾 查看已有的 Conda 环境
+如果你不确定环境的名称，可以先查看：
+conda env list
+或：
+conda info --envs
+输出会显示你所有的环境，当前活跃的环境前会有一个星号 *
+标记。
+CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7," accelerate launch train_seesr.py \
+–pretrained_model_name_or_path=“/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/checkpoint/SeeSR/stable-diffusion-2-base”
+–output_dir=“./experience/seesr1500”
+–root_folders
+‘/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/Multi_System/train_6000’
+–ram_ft_path
+‘/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/Multi_System/SeeSR-main/preset/models/DAPE.pth’
+–enable_xformers_memory_efficient_attention
+–mixed_precision=“fp16”
+–resolution=512
+–learning_rate=5e-5
+–train_batch_size=16
+–gradient_accumulation_steps=2
+–null_text_ratio=0.5 –dataloader_num_workers=0
+–checkpointing_steps=10000
+]]></content>
+      <categories>
+        <category>科研</category>
+      </categories>
+      <tags>
+        <tag>操作指南</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>关于DDPM的一些疑惑</title>
+    <url>/2025/06/26/%E5%85%B3%E4%BA%8EDDPM%E7%9A%84%E4%B8%80%E4%BA%9B%E7%96%91%E6%83%91/</url>
+    <content><![CDATA[在DDPM当中，也存在着一个类似于VAE的ELBO，我们需要优化他，表现为：
+
+
+图片
+
+其中给关于最后一项的优化我在这里在此复述一下思路：下面的q首先需要拿贝叶斯公式进行推导（因为是反向的，x_0不可以去掉）：
+
+
+图片
+
+因此我们可以完全写出正态分布函数的参数：
+
+
+图片
+
+由先验知识我们知道，分子p_θ应该同样遵守高斯分布，所以我们假设他服从一个高斯分布，并且假设他的方差服从q反向传导的方差，这样，KL散度的计算就可以被简化为期望的L2：
+
+
+图片
+
+接下来，如果我们将p当中的期望项也写成和q一样的格式，但是将x_0替换为我们想要生成的x_θ，然后，又有之前按Markov
+Chain的推导，我们可以将期望完全写成x_t和一个分布噪声之和的形式，这便是原文当中损失函数的推导：
+
+
+图片
+
+
+
+图片
+
+这是我觉得DDPM当中比较难以理解的部分，其他的其实还是很好理解的。关于中间那个式子，再预测出ε_θ其实就很好解决了。
+所以在理解了这个之后，其实也就明白了，为什么训练的过程当中，我们需要神经网络预测的是那个ε_θ（是的，每一小步都要！）。生成过程主要就是下面这样：
+
+
+图片
+
+下面是一些实现细节
+Linear Noise Scheduler
+在正向传播的过程当中，需要用一个调度器（scheduler）来调整每一步的alpha（前大后小），貌似是线性变化的，初始实现是这样，这是第一个职责。
+另外一个职责是，给定了最终的噪声图像x_T，以及预测的分布ε，就可以根据之前推导的公式进行重参数化，其实我觉得本质上就是可以同时实现正反向重参数化的过程（毕竟逻辑相同）。
+T值嵌入
+未完待续
+]]></content>
+      <categories>
+        <category>科研</category>
+      </categories>
+      <tags>
+        <tag>知识积累</tag>
       </tags>
   </entry>
 </search>
