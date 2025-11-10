@@ -1,136 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>AI4S平台操作指南</title>
-    <url>/2025/06/26/AI4S/</url>
-    <content><![CDATA[步骤 1: 删除 .conda 和
-.condarc 目录
-cd ~rm -rf .conda .condarc
-步骤 2:
-使用bashrc_backup.txt替换原始.bashrc文件
-首先，我们需要从第117行开始替换您的.bashrc文件。查看您提供的文件，第117行开始的内容是conda初始化部分：
-cd ~# 先备份原始.bashrccp .bashrc .bashrc.old# 保留原始.bashrc的前116行head -n 116 .bashrc.old &gt; .bashrc# 从bashrc_backup.txt的第117行开始追加到.bashrctail -n +117 /home/bml/storage/mnt/v-7c231cc5f5054b0a/org/envs/bashrc_backup.txt &gt;&gt; .bashrc
-步骤 3: 运行source
-.bashrc激活新的conda
-source ~/.bashrc
-这一步将加载新的bashrc配置，包括更新的conda路径。您应该会看到三行”Save
-your data in /home/bml/storage directory !!!“的提示信息。
-步骤 4: 使用新conda中的环境
-新的conda路径被设置为/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/miniconda3/bin。您可以列出并使用新的conda环境：
-# 查看可用的conda环境conda env list# 激活特定环境（以&quot;myenv&quot;为例）conda activate myenv
-如果您想使用/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/envs/中的特定环境，可以这样操作：
-# 激活特定路径下的环境conda activate /home/bml/storage/mnt/v-7c231cc5f5054b0a/org/envs/环境名称
-完成这些步骤后，您的conda环境应该已经被重置并指向了新的路径。您可以通过which conda命令验证conda的路径是否正确更新。
-计算PSNR和SSIM的程序
-python evaluate.py
-–pred_dir
-/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/sim_deblur_multi_system/output_difftrain_1500
-–gt_dir
-/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/sim_deblur_multi_system/Test_div100/gt
-–ext png
-–pred_prefix deblur_
-scp -p 15022 “0: downloadladdsr.zip” juegong@180.169.75.62:/data2/user/juegong/AddsR
-在 Linux 终端中使用 screen
-是一种非常实用的方式来创建和管理多个会话，尤其适合远程连接、长期运行任务等场景。以下是创建和使用
-screen 的基本操作：
-
-🔧 安装 screen（如果尚未安装）
-Debian/Ubuntu 系：
-sudo apt updatesudo apt install screen
-Red Hat/CentOS 系：
-sudo yum install screen
-
-🚀 创建新的 screen 会话
-screen -S 会话名称
-示例：
-screen -S mysession
-
-🧩 常用操作命令
-
-
-
-操作
-命令
-
-
-
-
-创建新会话
-screen -S 名称
-
-
-查看所有会话
-screen -ls
-
-
-恢复某个会话
-screen -r 名称或ID
-
-
-暂时离开（detach）当前会话
-Ctrl + A 然后按 D
-
-
-销毁会话
-在会话中输入 exit 或关闭终端窗口
-
-
-强制接管会话
-screen -d -r 名称或ID
-
-
-
-
-💡 提示
-
-多个 screen 会话可以并行存在。
-即使你退出终端，screen 中运行的程序依然会继续运行。
-进入 screen 后的命令操作与普通终端完全一致。
-
-
-如果你需要在 screen 里运行特定脚本或程序，也可以直接这样：
-screen -S mytask bash myscript.sh
-需要我帮你设置自动启动 screen 或写个脚本吗？
-在 Linux 终端中删除一个 Conda 环境，可以按照下面的步骤操作：
-
-🧹 删除 Conda 环境的命令
-conda remove --name 环境名 --all
-示例：
-conda remove --name myenv --all
-这条命令的含义是：移除名为 myenv 的 conda 环境中的
-所有内容，并彻底删除该环境。
-
-🧾 查看已有的 Conda 环境
-如果你不确定环境的名称，可以先查看：
-conda env list
-或：
-conda info --envs
-输出会显示你所有的环境，当前活跃的环境前会有一个星号 *
-标记。
-CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7," accelerate launch train_seesr.py \
-–pretrained_model_name_or_path=“/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/checkpoint/SeeSR/stable-diffusion-2-base”
-–output_dir=“./experience/seesr1500”
-–root_folders
-‘/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/Multi_System/train_6000’
-–ram_ft_path
-‘/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/Multi_System/SeeSR-main/preset/models/DAPE.pth’
-–enable_xformers_memory_efficient_attention
-–mixed_precision=“fp16”
-–resolution=512
-–learning_rate=5e-5
-–train_batch_size=16
-–gradient_accumulation_steps=2
-–null_text_ratio=0.5 –dataloader_num_workers=0
-–checkpointing_steps=10000
-]]></content>
-      <categories>
-        <category>科研</category>
-      </categories>
-      <tags>
-        <tag>操作指南</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>深度学习服务器操作指南</title>
     <url>/2025/06/26/DL-safari/</url>
     <content><![CDATA[目录
@@ -496,6 +366,282 @@ the following paper(s).
 Acknowledgements
 [TBD]
 
+]]></content>
+      <categories>
+        <category>科研</category>
+      </categories>
+      <tags>
+        <tag>个人科研项目</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>AI4S平台操作指南</title>
+    <url>/2025/06/26/AI4S/</url>
+    <content><![CDATA[步骤 1: 删除 .conda 和
+.condarc 目录
+cd ~rm -rf .conda .condarc
+步骤 2:
+使用bashrc_backup.txt替换原始.bashrc文件
+首先，我们需要从第117行开始替换您的.bashrc文件。查看您提供的文件，第117行开始的内容是conda初始化部分：
+cd ~# 先备份原始.bashrccp .bashrc .bashrc.old# 保留原始.bashrc的前116行head -n 116 .bashrc.old &gt; .bashrc# 从bashrc_backup.txt的第117行开始追加到.bashrctail -n +117 /home/bml/storage/mnt/v-7c231cc5f5054b0a/org/envs/bashrc_backup.txt &gt;&gt; .bashrc
+步骤 3: 运行source
+.bashrc激活新的conda
+source ~/.bashrc
+这一步将加载新的bashrc配置，包括更新的conda路径。您应该会看到三行”Save
+your data in /home/bml/storage directory !!!“的提示信息。
+步骤 4: 使用新conda中的环境
+新的conda路径被设置为/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/miniconda3/bin。您可以列出并使用新的conda环境：
+# 查看可用的conda环境conda env list# 激活特定环境（以&quot;myenv&quot;为例）conda activate myenv
+如果您想使用/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/envs/中的特定环境，可以这样操作：
+# 激活特定路径下的环境conda activate /home/bml/storage/mnt/v-7c231cc5f5054b0a/org/envs/环境名称
+完成这些步骤后，您的conda环境应该已经被重置并指向了新的路径。您可以通过which conda命令验证conda的路径是否正确更新。
+计算PSNR和SSIM的程序
+python evaluate.py
+–pred_dir
+/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/sim_deblur_multi_system/output_difftrain_1500
+–gt_dir
+/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/sim_deblur_multi_system/Test_div100/gt
+–ext png
+–pred_prefix deblur_
+scp -p 15022 “0: downloadladdsr.zip” juegong@180.169.75.62:/data2/user/juegong/AddsR
+在 Linux 终端中使用 screen
+是一种非常实用的方式来创建和管理多个会话，尤其适合远程连接、长期运行任务等场景。以下是创建和使用
+screen 的基本操作：
+
+🔧 安装 screen（如果尚未安装）
+Debian/Ubuntu 系：
+sudo apt updatesudo apt install screen
+Red Hat/CentOS 系：
+sudo yum install screen
+
+🚀 创建新的 screen 会话
+screen -S 会话名称
+示例：
+screen -S mysession
+
+🧩 常用操作命令
+
+
+
+操作
+命令
+
+
+
+
+创建新会话
+screen -S 名称
+
+
+查看所有会话
+screen -ls
+
+
+恢复某个会话
+screen -r 名称或ID
+
+
+暂时离开（detach）当前会话
+Ctrl + A 然后按 D
+
+
+销毁会话
+在会话中输入 exit 或关闭终端窗口
+
+
+强制接管会话
+screen -d -r 名称或ID
+
+
+
+
+💡 提示
+
+多个 screen 会话可以并行存在。
+即使你退出终端，screen 中运行的程序依然会继续运行。
+进入 screen 后的命令操作与普通终端完全一致。
+
+
+如果你需要在 screen 里运行特定脚本或程序，也可以直接这样：
+screen -S mytask bash myscript.sh
+需要我帮你设置自动启动 screen 或写个脚本吗？
+在 Linux 终端中删除一个 Conda 环境，可以按照下面的步骤操作：
+
+🧹 删除 Conda 环境的命令
+conda remove --name 环境名 --all
+示例：
+conda remove --name myenv --all
+这条命令的含义是：移除名为 myenv 的 conda 环境中的
+所有内容，并彻底删除该环境。
+
+🧾 查看已有的 Conda 环境
+如果你不确定环境的名称，可以先查看：
+conda env list
+或：
+conda info --envs
+输出会显示你所有的环境，当前活跃的环境前会有一个星号 *
+标记。
+CUDA_VISIBLE_DEVICES="0,1,2,3,4,5,6,7," accelerate launch train_seesr.py \
+–pretrained_model_name_or_path=“/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/checkpoint/SeeSR/stable-diffusion-2-base”
+–output_dir=“./experience/seesr1500”
+–root_folders
+‘/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/Multi_System/train_6000’
+–ram_ft_path
+‘/home/bml/storage/mnt/v-7c231cc5f5054b0a/org/code/Multi_System/SeeSR-main/preset/models/DAPE.pth’
+–enable_xformers_memory_efficient_attention
+–mixed_precision=“fp16”
+–resolution=512
+–learning_rate=5e-5
+–train_batch_size=16
+–gradient_accumulation_steps=2
+–null_text_ratio=0.5 –dataloader_num_workers=0
+–checkpointing_steps=10000
+]]></content>
+      <categories>
+        <category>科研</category>
+      </categories>
+      <tags>
+        <tag>操作指南</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SODiff-AAAI-2026</title>
+    <url>/2025/11/10/SODiff-AAAI-2026/</url>
+    <content><![CDATA[
+SODiff: Semantic-Oriented Diffusion Model  for JPEG Compression
+Artifacts Removal
+
+
+
+
+
+
+
+
+ 
+
+ 
+
+
+
+Tingyu Yang, Jue Gong, Jinpei Guo, Wenbo Li, Yong Guo, and Yulun Zhang, SODiff: Semantic-Oriented
+Diffusion Model for JPEG Compression Artifacts Removal, arXiv, 2025
+🔥🔥 News
+
+2025-08-10: This
+repo is released.
+
+
+Abstract: JPEG, as a widely used image compression
+standard, often introduces severe visual artifacts when achieving high
+compression ratios. Although existing deep learning-based restoration
+methods have made considerable progress, they often struggle to recover
+complex texture details, resulting in over-smoothed outputs. To overcome
+these limitations, we propose SODiff, a novel and efficient
+semantic-oriented one-step diffusion model for JPEG artifacts removal.
+Our core idea is that effective restoration hinges on providing
+semantic-oriented guidance to the pre-trained diffusion model, thereby
+fully leveraging its powerful generative prior. To this end, SODiff
+incorporates a semantic-aligned image prompt extractor (SAIPE). SAIPE
+extracts rich features from low-quality (LQ) images and projects them
+into an embedding space semantically aligned with that of the text
+encoder. Simultaneously, it preserves crucial information for faithful
+reconstruction. Furthermore, we propose a quality factor-aware time
+predictor that implicitly learns the compression quality factor (QF) of
+the LQ image and adaptively selects the optimal denoising start timestep
+for the diffusion process. Extensive experimental results show that our
+SODiff outperforms recent leading methods in both visual quality and
+quantitative metrics.
+
+
+ Figure 1: SAIPE
+(semantic-aligned image prompt extractor) overview.
+
+
+ Figure 2: Model
+structure of SODiff (semantic-oriented diffusion).
+
+
+
+
+
+ LIVE-1 (QF=5)
+
+
+ Urban100 (QF=5)
+
+
+ DIV2K-val (QF=5)
+
+
+
+Click on images to view interactive comparisons on
+ImgSli.
+
+
+📋 TODO
+
+Release code and pretrained
+models
+
+🔗 Contents
+
+Models
+Testing
+Training
+Results
+Citation
+Acknowledgements
+
+📊 Results
+The performance of SODiff on the datasets
+LIVE-1, Urban100, and
+DIV2K-val. Detailed results can be found in the
+paper.
+
+
+ Quantitative Comparisons (click to expand)
+
+
+Results in the Table below show SODiff’s performance on different
+datasets.
+
+
+
+Table_results.png
+
+
+
+
+
+
+ Visual Comparisons (click to expand)
+
+
+Results in the figure below show SODiff’s performance on DIV2K-val
+(QF=1).
+
+
+
+DIV2K_qf1.png
+
+
+
+
+Results in the figure below show SODiff’s performance on Urban100
+(QF=5).
+
+
+
+Urban100_qf5.png
+
+
+
+
+👉 Citation
+If you find the work helpful to your research, please cite the
+following paper(s).
+@article&#123;yang2025sodiff,    title=&#123;&#123;SODiff: Semantic-Oriented Diffusion Model for JPEG Compression Artifacts Removal &#125;&#125;,    author=&#123;Yang, Tingyu and Gong, Jue and Guo, Jinpei and Li, Wenbo and Guo, Yong and Zhang, Yulun&#125;,    journal=&#123;arXiv preprint 2508.07346&#125;,    year=&#123;2025&#125;&#125;
 ]]></content>
       <categories>
         <category>科研</category>
