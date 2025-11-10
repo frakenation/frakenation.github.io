@@ -300,12 +300,12 @@ of both quantitative metrics and visual quality on synthetic and
 real-world datasets, including our introduced MPII-Test.
 
 
+ Figure
+2: Degradation pipeline overview.
 
-Figure 2: Degradation pipeline overview.
 
-
-
-Figure 3: Model structure of our HAODiff.
+ Figure 3:
+Model structure of our HAODiff.
 
 
 
@@ -351,6 +351,9 @@ Results in Table 1 on synthetic PERSONA-Val dataset from the main paper.
 
 
 
+tab_1.png
+
+
 
 
  Quantitative Comparisons (click to expand)
@@ -359,6 +362,9 @@ Results in Table 1 on synthetic PERSONA-Val dataset from the main paper.
 Results in Table 2 on real-world PERSONA-Test and MPII-Test datasets
 from the main paper.
 
+
+
+tab_2.png
 
 
 
@@ -373,11 +379,17 @@ paper.
 
 
 
+fig5-main.png
+
+
 
 
 Results in Figure 6 on real-world PERSONA-Test and MPII-Test datasets
 from the main paper.
 
+
+
+fig6-main.png
 
 
 
@@ -391,6 +403,9 @@ Results in Figure 4 from supplemental material.
 
 
 
+fig4-supp.png
+
+
 
 
 
@@ -402,7 +417,13 @@ Results in Figure 5, 6 from supplemental material.
 
 
 
+fig5-supp.png
 
+
+
+
+
+fig6-supp.png
 
 
 
@@ -416,7 +437,13 @@ Results in Figure 7, 8 from supplemental material.
 
 
 
+fig7-supp.png
 
+
+
+
+
+fig8-supp.png
 
 
 
@@ -430,7 +457,13 @@ Results in Figure 9, 10 from supplemental material.
 
 
 
+fig9-supp.png
 
+
+
+
+
+fig10-supp.png
 
 
 
@@ -444,7 +477,13 @@ Results in Figure 11, 12 from supplemental material.
 
 
 
+fig11-supp.png
 
+
+
+
+
+fig12-supp.png
 
 
 
