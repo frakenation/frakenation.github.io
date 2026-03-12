@@ -491,461 +491,6 @@ Acknowledgements
       </tags>
   </entry>
   <entry>
-    <title>LUCID(SIGGRAPH 2026)</title>
-    <url>/2026/02/24/LUCID-Siggraph-2026/</url>
-    <content><![CDATA[
-LUCID: Learning Unified Control for Image Deflaring  and Exposure
-Mastery in Nighttime Photography
-
-
-Anonymous Author(s)
-
-
-“A unified diffusion framework that jointly addresses lens flare removal
-and exposure control in nighttime photography, enabling continuous and
-controllable restoration.”, SIGGRAPH 2026
-
-
-
-
-
-
-
-
-Abstract: Photography is the art of painting with
-light, yet nighttime scenes are shaped by competing degradations:
-intense flares obscure scene structure, while photon-limited regions
-collapse into noise. Conventional approaches address these factors in
-isolation, overlooking the fact that these degradations are
-fundamentally entangled. To bridge this gap, we introduce
-LUCID, a unified framework that reframes nighttime
-restoration as a continuous and controllable process
-rather than a fixed correction. We decompose nighttime restoration into
-two cooperative components: a flare disentanglement
-module that lifts the “curtain” of optical artifacts to provide
-reliable structural guidance, and a diffusion-driven
-module that leverages generative priors to reconstruct clean
-and well-exposed imagery. Crucially, LUCID introduces explicit
-controllability through a novel four-mode training
-strategy, enabling users to steer the restoration process via
-Classifier-Free Guidance (CFG) and allowing selective control over light
-sources and their associated flare and ghosting artifacts, while also
-supporting HDR reconstruction through continuous
-exposure control. Extensive experiments demonstrate that LUCID
-consistently outperforms state-of-the-art methods across diverse
-real-world nighttime scenarios.
-
-
-🔥 Highlights
-
-统一框架：首次将镜头光晕去除（deflaring）与曝光增强（low-light
-enhancement）统一在单一扩散模型中联合求解，避免了级联流水线的误差累积问题。
-连续可控：通过 Classifier-Free
-Guidance（CFG），用户可连续调节输出亮度（Exposure
-Value），实现从欠曝光到过曝光的平滑过渡。
-光源精细控制：四模式训练策略（Four-Mode
-Training）使模型支持对光源的选择性保留或抑制，同时支持”保留光晕”或”完全去除光晕”的语义切换。
-单图 HDR 重建：利用 CFG
-合成虚拟曝光序列，经拉普拉斯金字塔融合实现单张图像的 HDR 重建。
-强泛化能力：在 ExDark、Flare7K、SiHDR
-等多个基准上全面超越最新 SOTA，并在电影素材等 in-the-wild
-场景中展现出色的鲁棒性。
-
-
-🎯 Problem Formulation
-夜间图像退化遵循扩展 Retinex 模型：
-I = R ⋅ L + F
-其中 R 为场景反射率，L 为环境光照，F 为光晕引起的加性杂散光。
-两种退化相互耦合、相互对抗： - 提升曝光（增大 L）会同时放大光晕 F； - 激进去除光晕 F 会破坏合法场景结构。
-因此，LUCID 将二者分解后协同求解，而非独立处理。
-
-🏗️ Framework Overview
-LUCID 由两个串联模块组成：
-1. Flare
-Disentanglement（光晕解耦模块）
-采用轻量级 U-Net，共享编码器 Edecomp，双并行解码器
-Dflare 和 Dbg：
-Iflare = Dflare(Edecomp(Iin))
-Ibg = Dbg(Edecomp(Iin))
-为保证解耦有效性，施加以下约束：
-
-正交约束（防止两路特征表示相同内容）： ℒortho = ∥Fbgk ⊙ Fflarek∥22
-重建一致性约束： ℒrecon = ∥(Iflare + Ibg) − Iin∥22
-总损失： ℒ = ℒrecon + ℒortho + ℒcomp
-
-2. Mixing-View
-Diffusion（多视角扩散模块）
-将解耦后的 Ibg
-和 Iflare 沿 View
-维度拼接，送入扩散网络进行跨视图交互，实现精细化复原。扩散损失为：
-ℒdiff = ℒintri + ℒ2 + ℒLPIPS
-其中 ℒintri
-为多层特征级内在感知损失。
-
-🎛️ Four-Mode Training Strategy
-LUCID
-核心创新之一：通过四种训练模式的混合监督，让模型在推理时支持连续控制。
-
-
-
-
-
-
-
-
-
-
-模式
-主输入
-参考视图
-训练目标
-效果
-
-
-
-
-Positive Mode 1
-Ibg
-Iin（原图）
-Ihigh（良好曝光）
-曝光增强 + 去光晕
-
-
-Negative Mode 1
-Ibg
-Iflare（光晕图）
-Ilow（欠曝光）
-与光晕关联，抑制增强
-
-
-Positive Mode 2
-Ibg
-Iin + 光源
-prompt
-Ihigh + Ihlight
-保留光源外观
-
-
-Negative Mode 2
-Ibg
-Iflare + 光源
-prompt
-Ilow + Illight
-抑制光源散射
-
-
-
-推理时，CFG scale β 在
-[0.25, 1.5] 范围内连续调节，β &lt; 1
-时偏向负向（去光晕、欠曝光），β &gt; 1
-时偏向正向（增强、保留光源），β ≈ 1.05 为感知最优平衡点。
-CFG
-与曝光值（ΔEV）呈近似线性关系，用户可直觉化地拨动参数控制亮度。
-
-💡 Single-Image HDR
-Reconstruction
-LUCID 通过 CFG 在曝光解空间（Exposure Solution
-Manifold）上采样一组虚拟曝光序列，再经拉普拉斯金字塔融合 +
-基于质量的权重图合成 Tone-mapped HDR，实现从单张夜间图像重建
-HDR 的完整流程。
-
-📊 Experiments
-数据集
-
-
-
-任务
-数据集
-说明
-
-
-
-
-通用夜间增强
-ExDark（筛选 1271 张）
-极暗、逆光、色偏等多样场景
-
-
-光晕去除
-Flare7K
-真实夜间镜头光晕与鬼影
-
-
-单图 HDR
-SiHDR
-单曝光 HDR 重建
-
-
-
-定量结果（ExDark，无参考
-IQA，越高越好）
-
-
-
-
-
-
-
-
-
-
-
-方法
-CLIPIQA↑
-MANIQA↑
-MUSIQ↑
-LIQE↑
-NIMA↑
-
-
-
-
-ExDark（原图）
-0.4281
-0.2939
-50.99
-2.267
-5.227
-
-
-Zero-DCE
-0.4243
-0.2899
-50.98
-2.078
-4.999
-
-
-Retinexformer
-0.3749
-0.2588
-52.26
-2.058
-5.121
-
-
-Jin et al.
-0.3664
-0.2585
-51.89
-2.087
-5.078
-
-
-Reti-Diff
-0.4159
-0.2867
-50.91
-1.967
-5.083
-
-
-DarkIR
-0.4107
-0.3078
-52.03
-2.076
-5.046
-
-
-LUCID（β=1.05）
-0.4774
-0.3264
-61.45
-3.019
-5.390
-
-
-
-LUCID 在全部五项无参考感知指标上均达到最优，MUSIQ 提升尤为显著（+9.19
-vs. 第二名）。
-与级联流水线的对比
-直接级联”去光晕 →
-低光增强”方法存在误差累积：去光晕阶段残留的潜在光晕在黑暗中难以察觉，却在增强阶段被大幅放大为严重伪影。LUCID
-的联合建模从根本上规避了这一问题。
-可控性验证
-对比三种替代方案： 1. Naive
-Baseline（全局曝光调整）：放大传感器噪声，同时扩大光晕范围； 2.
-Cascaded Pipeline：误差累积，产生非自然残影； 3.
-Commercial
-GenAI（纯文本控制）：语义漂移，精细亮度调节能力不足。
-LUCID 通过 CFG scale
-实现透明、可预测的连续控制，弥补了上述所有缺陷。
-
-🖼️ Qualitative Results
-通用夜间增强（ExDark）：LUCID
-有效抑制超暗区域噪声、压缩高对比动态范围、修正色偏、恢复逆光场景清晰度，各场景均展现最佳语义一致性。
-光晕去除（Flare7K）：基线方法常见残留条纹/模糊边缘，或对光源周围过度减法导致不自然锐边。LUCID
-借助生成先验合成可靠背景纹理，同时重建光源的自然光学衰减，结果视觉洁净且物理合理。
-单图 HDR（SiHDR）：IntrinsicHDR
-阴影压暗；LEDiff、Gaslight 出现幻觉（屋顶变形、色偏、光晕放大）。LUCID
-保持结构保真度与自然色彩平衡，达到最佳光真实感。
-下游应用： -
-预处理：去除已有光晕，为后续 prompt
-驱动编辑提供干净底图； - 后处理：为 AI
-生成图像灵活调节曝光和光晕效果。
-
-⚒️ TODO
-
-Release code and pretrained
-models
-Release project page
-
-🔗 Contents
-
-Models
-Testing
-Training
-Results
-Citation
-
-🔎 Results
-LUCID 在
-ExDark、Flare7K、SiHDR
-三个基准上全面达到最先进水平，详细定量与定性结果见论文。
-📎 Citation
-@inproceedings{lucid2026,    title={{LUCID: Learning Unified Control for Image Deflaring and Exposure Mastery in Nighttime Photography}},    author={Anonymous Author(s)},    booktitle={ACM SIGGRAPH},    year={2026}}
-💡 Acknowledgements
-[TBD]
-]]></content>
-      <categories>
-        <category>科研</category>
-      </categories>
-      <tags>
-        <tag>个人科研项目</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SODiff-AAAI-2026</title>
-    <url>/2025/11/10/SODiff-AAAI-2026/</url>
-    <content><![CDATA[
-SODiff: Semantic-Oriented Diffusion Model  for JPEG Compression
-Artifacts Removal
-
-
-
-
-
-
-
-
- 
-
- 
-
-
-
-Tingyu Yang, Jue Gong, Jinpei Guo, Wenbo Li, Yong Guo, and Yulun Zhang, SODiff: Semantic-Oriented
-Diffusion Model for JPEG Compression Artifacts Removal, arXiv, 2025
-🔥🔥 News
-
-2025-08-10: This
-repo is released.
-
-
-Abstract: JPEG, as a widely used image compression
-standard, often introduces severe visual artifacts when achieving high
-compression ratios. Although existing deep learning-based restoration
-methods have made considerable progress, they often struggle to recover
-complex texture details, resulting in over-smoothed outputs. To overcome
-these limitations, we propose SODiff, a novel and efficient
-semantic-oriented one-step diffusion model for JPEG artifacts removal.
-Our core idea is that effective restoration hinges on providing
-semantic-oriented guidance to the pre-trained diffusion model, thereby
-fully leveraging its powerful generative prior. To this end, SODiff
-incorporates a semantic-aligned image prompt extractor (SAIPE). SAIPE
-extracts rich features from low-quality (LQ) images and projects them
-into an embedding space semantically aligned with that of the text
-encoder. Simultaneously, it preserves crucial information for faithful
-reconstruction. Furthermore, we propose a quality factor-aware time
-predictor that implicitly learns the compression quality factor (QF) of
-the LQ image and adaptively selects the optimal denoising start timestep
-for the diffusion process. Extensive experimental results show that our
-SODiff outperforms recent leading methods in both visual quality and
-quantitative metrics.
-
-
- Figure 1: SAIPE
-(semantic-aligned image prompt extractor) overview.
-
-
- Figure 2: Model
-structure of SODiff (semantic-oriented diffusion).
-
-
-
-📋 TODO
-
-Release code and pretrained
-models
-
-🔗 Contents
-
-Models
-Testing
-Training
-Results
-Citation
-Acknowledgements
-
-📊 Results
-The performance of SODiff on the datasets
-LIVE-1, Urban100, and
-DIV2K-val. Detailed results can be found in the
-paper.
-
-
- Quantitative Comparisons (click to expand)
-
-
-Results in the Table below show SODiff’s performance on different
-datasets.
-
-
-
-Table_results.png
-
-
-
-
-
-
- Visual Comparisons (click to expand)
-
-
-Results in the figure below show SODiff’s performance on DIV2K-val
-(QF=1).
-
-
-
-DIV2K_qf1.png
-
-
-
-
-Results in the figure below show SODiff’s performance on Urban100
-(QF=5).
-
-
-
-Urban100_qf5.png
-
-
-
-
-👉 Citation
-If you find the work helpful to your research, please cite the
-following paper(s).
-@article&#123;yang2025sodiff,    title=&#123;&#123;SODiff: Semantic-Oriented Diffusion Model for JPEG Compression Artifacts Removal &#125;&#125;,    author=&#123;Yang, Tingyu and Gong, Jue and Guo, Jinpei and Li, Wenbo and Guo, Yong and Zhang, Yulun&#125;,    journal=&#123;arXiv preprint 2508.07346&#125;,    year=&#123;2025&#125;&#125;
-]]></content>
-      <categories>
-        <category>科研</category>
-      </categories>
-      <tags>
-        <tag>个人科研项目</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>StyID学习与提问</title>
     <url>/2025/06/26/StyID/</url>
     <content><![CDATA[Taming Transformers 的作用
@@ -1150,6 +695,136 @@ scaling
       </categories>
       <tags>
         <tag>论文阅读</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SODiff-AAAI-2026</title>
+    <url>/2025/11/10/SODiff-AAAI-2026/</url>
+    <content><![CDATA[
+SODiff: Semantic-Oriented Diffusion Model  for JPEG Compression
+Artifacts Removal
+
+
+
+
+
+
+
+
+ 
+
+ 
+
+
+
+Tingyu Yang, Jue Gong, Jinpei Guo, Wenbo Li, Yong Guo, and Yulun Zhang, SODiff: Semantic-Oriented
+Diffusion Model for JPEG Compression Artifacts Removal, arXiv, 2025
+🔥🔥 News
+
+2025-08-10: This
+repo is released.
+
+
+Abstract: JPEG, as a widely used image compression
+standard, often introduces severe visual artifacts when achieving high
+compression ratios. Although existing deep learning-based restoration
+methods have made considerable progress, they often struggle to recover
+complex texture details, resulting in over-smoothed outputs. To overcome
+these limitations, we propose SODiff, a novel and efficient
+semantic-oriented one-step diffusion model for JPEG artifacts removal.
+Our core idea is that effective restoration hinges on providing
+semantic-oriented guidance to the pre-trained diffusion model, thereby
+fully leveraging its powerful generative prior. To this end, SODiff
+incorporates a semantic-aligned image prompt extractor (SAIPE). SAIPE
+extracts rich features from low-quality (LQ) images and projects them
+into an embedding space semantically aligned with that of the text
+encoder. Simultaneously, it preserves crucial information for faithful
+reconstruction. Furthermore, we propose a quality factor-aware time
+predictor that implicitly learns the compression quality factor (QF) of
+the LQ image and adaptively selects the optimal denoising start timestep
+for the diffusion process. Extensive experimental results show that our
+SODiff outperforms recent leading methods in both visual quality and
+quantitative metrics.
+
+
+ Figure 1: SAIPE
+(semantic-aligned image prompt extractor) overview.
+
+
+ Figure 2: Model
+structure of SODiff (semantic-oriented diffusion).
+
+
+
+📋 TODO
+
+Release code and pretrained
+models
+
+🔗 Contents
+
+Models
+Testing
+Training
+Results
+Citation
+Acknowledgements
+
+📊 Results
+The performance of SODiff on the datasets
+LIVE-1, Urban100, and
+DIV2K-val. Detailed results can be found in the
+paper.
+
+
+ Quantitative Comparisons (click to expand)
+
+
+Results in the Table below show SODiff’s performance on different
+datasets.
+
+
+
+Table_results.png
+
+
+
+
+
+
+ Visual Comparisons (click to expand)
+
+
+Results in the figure below show SODiff’s performance on DIV2K-val
+(QF=1).
+
+
+
+DIV2K_qf1.png
+
+
+
+
+Results in the figure below show SODiff’s performance on Urban100
+(QF=5).
+
+
+
+Urban100_qf5.png
+
+
+
+
+👉 Citation
+If you find the work helpful to your research, please cite the
+following paper(s).
+@article&#123;yang2025sodiff,    title=&#123;&#123;SODiff: Semantic-Oriented Diffusion Model for JPEG Compression Artifacts Removal &#125;&#125;,    author=&#123;Yang, Tingyu and Gong, Jue and Guo, Jinpei and Li, Wenbo and Guo, Yong and Zhang, Yulun&#125;,    journal=&#123;arXiv preprint 2508.07346&#125;,    year=&#123;2025&#125;&#125;
+]]></content>
+      <categories>
+        <category>科研</category>
+      </categories>
+      <tags>
+        <tag>个人科研项目</tag>
       </tags>
   </entry>
   <entry>
