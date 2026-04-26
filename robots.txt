@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://frakenation.github.io/sitemap.xml
