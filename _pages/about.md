@@ -31,10 +31,10 @@ latest_posts:
 
 I am an undergraduate student in **Biomedical Engineering** at [Shanghai Jiao Tong University](https://en.sjtu.edu.cn/), advised by [Prof. Xiaoyun Yuan](https://xiaoyunyuan.net/) at the [OpticAI Lab](https://xiaoyunyuan.net/), AI Institute, SJTU. You can also call me **Theo**.
 
-## Education
-
-- **B.Eng. in Biomedical Engineering**, Shanghai Jiao Tong University, 2023-present
-
 My research interests lie at the intersection of generative AI, computational photography, and low-level vision. I am particularly interested in image restoration and enhancement under challenging conditions, including nighttime photography, compression artifacts, and human-centered visual recovery. My work explores how diffusion models, semantic guidance, and perceptual optimization can be used to improve both visual quality and content fidelity.
 
 I have (co-)first-authored papers accepted at **NeurIPS 2025**, **AAAI 2026**, and **SIGGRAPH 2026**, covering topics from night photography enhancement and JPEG artifact removal to human-aware image restoration with one-step diffusion.
+
+## Education
+
+- **B.Eng. in Biomedical Engineering**, Shanghai Jiao Tong University, 2023-present
