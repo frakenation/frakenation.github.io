@@ -35,6 +35,8 @@ My research interests lie at the intersection of generative AI, computational ph
 
 I have (co-)first-authored papers accepted at **NeurIPS 2025**, **AAAI 2026**, and **SIGGRAPH 2026**, covering topics from night photography enhancement and JPEG artifact removal to human-aware image restoration with one-step diffusion.
 
+My journey into this field began with [Jue Gong](https://www.juegong.cn/), who opened its door and showed me the first glimmer of what lay beyond. I am also grateful to [Prof. Yulun Zhang](https://yulunzhang.com/) for our earlier collaboration, which helped shape the path I continue to follow.
+
 ## Education
 
 - **B.Eng. in Biomedical Engineering**, Shanghai Jiao Tong University, 2023-present
