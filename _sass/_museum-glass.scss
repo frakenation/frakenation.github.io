@@ -1,0 +1,303 @@
+@font-face {
+  font-family: "Cormorant Garamond Local";
+  src: url("../fonts/cormorant-garamond-variable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Courier Prime Local";
+  src: url("../fonts/courier-prime-regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Courier Prime Local";
+  src: url("../fonts/courier-prime-bold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+  --font-display: "Cormorant Garamond Local", Georgia, "Times New Roman", serif;
+  --font-prose: "Courier Prime Local", "Courier New", monospace;
+  --font-utility: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+html[data-palette="coffee"] {
+  --ink-primary: #4a3028;
+  --ink-strong: #2e211d;
+  --ink-muted: #75584a;
+  --accent: #8a5d3b;
+  --glass-home: rgba(248, 242, 232, 0.62);
+  --glass-reading: rgba(248, 242, 232, 0.84);
+  --glass-mobile: rgba(248, 242, 232, 0.88);
+  --glass-border: rgba(255, 255, 255, 0.62);
+  --shadow-warm: rgba(54, 36, 27, 0.18);
+  --background-wash: rgba(238, 227, 209, 0.2);
+}
+
+html[data-palette="forest"] {
+  --ink-primary: #173f34;
+  --ink-strong: #0f2b25;
+  --ink-muted: #45685b;
+  --accent: #557d68;
+  --glass-home: rgba(237, 241, 231, 0.64);
+  --glass-reading: rgba(237, 241, 231, 0.86);
+  --glass-mobile: rgba(237, 241, 231, 0.9);
+  --glass-border: rgba(250, 252, 245, 0.66);
+  --shadow-warm: rgba(18, 52, 42, 0.18);
+  --background-wash: rgba(219, 230, 215, 0.2);
+}
+
+html {
+  min-height: 100%;
+  background: #e8dfd1;
+}
+
+body {
+  min-height: 100vh;
+  isolation: isolate;
+  color: var(--ink-strong);
+  background: transparent;
+  font-family: var(--font-utility);
+}
+
+body::before,
+body::after {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  content: "";
+}
+
+body::before {
+  background-image: url("../img/museum-glass-background.jpg");
+  background-image: image-set(
+    url("../img/museum-glass-background-desktop.webp") type("image/webp"),
+    url("../img/museum-glass-background.jpg") type("image/jpeg")
+  );
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  filter: saturate(0.82) contrast(0.96);
+  transform: scale(1.01);
+}
+
+body::after {
+  z-index: -1;
+  background: var(--background-wash);
+}
+
+body,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+em,
+div,
+li,
+span,
+strong {
+  color: var(--ink-strong);
+}
+
+a,
+table.table a {
+  color: var(--accent);
+}
+
+a:hover,
+table.table a:hover {
+  color: var(--ink-primary);
+}
+
+.post-title,
+.post h2,
+.post h3,
+.header-bar h1,
+.publications h1,
+.publications h2,
+.navbar-brand,
+.navbar .nav-link {
+  color: var(--ink-primary);
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+}
+
+.post-title {
+  font-size: clamp(2.35rem, 6vw, 4.6rem);
+  line-height: 0.95;
+}
+
+.post h2,
+.header-bar h1,
+.publications h1 {
+  font-size: clamp(1.65rem, 3.4vw, 2.45rem);
+  line-height: 1;
+}
+
+.clearfix > p,
+.post-content > p,
+.post-content blockquote p,
+.abstract.hidden p {
+  font-family: var(--font-prose);
+  font-size: 1rem;
+  line-height: 1.72;
+}
+
+.publications,
+.publications .author,
+.publications .links,
+.publications .badges,
+.post-meta,
+.post-tags,
+.news,
+.btn,
+.badge,
+input,
+button,
+select,
+textarea {
+  font-family: var(--font-utility);
+}
+
+.site-surface {
+  position: relative;
+  margin-bottom: 5.25rem;
+  padding: clamp(1.45rem, 4vw, 3rem);
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  border-radius: 0.7rem;
+  box-shadow: 0 1.4rem 3.8rem var(--shadow-warm);
+  backdrop-filter: blur(20px) saturate(0.8);
+  -webkit-backdrop-filter: blur(20px) saturate(0.8);
+}
+
+.site-surface--home {
+  background: var(--glass-home);
+}
+
+.site-surface--reading {
+  background: var(--glass-reading);
+}
+
+.navbar {
+  border-bottom: 1px solid var(--glass-border);
+  background: rgba(248, 242, 232, 0.72);
+  opacity: 1;
+  box-shadow: 0 0.65rem 2.2rem rgba(54, 36, 27, 0.08);
+  backdrop-filter: blur(18px) saturate(0.82);
+  -webkit-backdrop-filter: blur(18px) saturate(0.82);
+}
+
+.navbar.navbar-light .navbar-brand,
+.navbar.navbar-light .navbar-nav .nav-item .nav-link,
+#search-toggle {
+  color: var(--ink-primary);
+}
+
+.navbar.navbar-light .navbar-nav .nav-item.active > .nav-link,
+.navbar.navbar-light .navbar-nav .nav-item .nav-link:hover,
+#search-toggle:hover {
+  color: var(--accent);
+}
+
+.navbar .dropdown-menu,
+.btn-group.dropdown .dropdown-menu,
+footer.fixed-bottom,
+footer.sticky-bottom {
+  border-color: var(--glass-border);
+  background: rgba(248, 242, 232, 0.86);
+  backdrop-filter: blur(18px) saturate(0.82);
+  -webkit-backdrop-filter: blur(18px) saturate(0.82);
+}
+
+footer.fixed-bottom .container,
+footer.fixed-bottom a,
+footer.sticky-bottom .container {
+  color: var(--ink-muted);
+}
+
+.card,
+.news table,
+blockquote {
+  border-color: rgba(74, 48, 40, 0.12);
+  background: rgba(255, 252, 246, 0.36);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .site-surface,
+  .navbar,
+  .navbar .dropdown-menu,
+  footer.fixed-bottom,
+  footer.sticky-bottom {
+    background: rgba(248, 242, 232, 0.94);
+  }
+}
+
+@media (max-width: 767.98px) {
+  body::before {
+    background-image: url("../img/museum-glass-background.jpg");
+    background-image: image-set(
+      url("../img/museum-glass-background-mobile.webp") type("image/webp"),
+      url("../img/museum-glass-background.jpg") type("image/jpeg")
+    );
+    background-position: 73% center;
+    filter: saturate(0.76) contrast(0.94);
+    transform: none;
+  }
+
+  .site-surface {
+    width: calc(100% - 1.25rem);
+    margin-top: 1.6rem !important;
+    margin-bottom: 4.75rem;
+    padding: 1.25rem 1rem 1.6rem;
+    border-radius: 0.45rem;
+    background: var(--glass-mobile);
+    box-shadow: 0 1rem 2.7rem rgba(54, 36, 27, 0.14);
+    backdrop-filter: blur(15px) saturate(0.8);
+    -webkit-backdrop-filter: blur(15px) saturate(0.8);
+  }
+
+  .post-title {
+    overflow-wrap: anywhere;
+    font-size: clamp(2rem, 12vw, 3.1rem);
+  }
+
+  .post h2,
+  .header-bar h1,
+  .publications h1 {
+    overflow-wrap: anywhere;
+    font-size: clamp(1.5rem, 8vw, 2rem);
+  }
+
+  .clearfix > p,
+  .post-content > p,
+  .post-content blockquote p,
+  .abstract.hidden p {
+    font-size: 0.96rem;
+    line-height: 1.68;
+  }
+
+  .navbar .container {
+    padding-right: max(15px, env(safe-area-inset-right));
+    padding-left: max(15px, env(safe-area-inset-left));
+  }
+}

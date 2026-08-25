@@ -37,3 +37,6 @@
 @use "font-awesome/brands";
 @use "font-awesome/solid";
 @use "font-awesome/regular";
+
+// Site-specific visual system. Keep last so it can safely override theme defaults.
+@use "museum-glass";
