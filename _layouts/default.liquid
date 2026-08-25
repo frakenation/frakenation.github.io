@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ site.lang }}">
+<html lang="{{ site.lang }}" data-palette="coffee">
   <!-- Head -->
   <head>
     {% if page.redirect %}
@@ -16,12 +16,17 @@
   </head>
 
   <!-- Body -->
-  <body class="{% if site.navbar_fixed %}fixed-top-nav{% endif %} {% unless site.footer_fixed %}sticky-bottom-footer{% endunless %}">
+  <body
+    class="layout-{{ page.layout | default: 'default' }} {% if page.permalink == '/' %}page-home{% else %}page-reading{% endif %} {% if site.navbar_fixed %}fixed-top-nav{% endif %} {% unless site.footer_fixed %}sticky-bottom-footer{% endunless %}"
+  >
     <!-- Header -->
     {% include header.liquid %}
 
     <!-- Content -->
-    <div class="container mt-5" role="main">
+    <div
+      class="container mt-5 site-surface {% if page.permalink == '/' %}site-surface--home{% else %}site-surface--reading{% endif %}"
+      role="main"
+    >
       {% if page.toc and page.toc.sidebar %}
         {% if page.toc.sidebar == 'right' %}
           <div class="row">
