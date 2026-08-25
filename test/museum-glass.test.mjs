@@ -41,3 +41,11 @@ test("local fonts and optimized backgrounds exist", () => {
     assert.equal(existsSync(new URL(`../${asset}`, import.meta.url)), true, asset);
   }
 });
+
+test("publication badges and editorial metadata follow the active palette", () => {
+  const styles = read("_sass/_museum-glass.scss");
+
+  assert.match(styles, /\.publications ol\.bibliography li \.abbr abbr\s*{[^}]*background-color:\s*var\(--ink-primary\)\s*!important;/s);
+  assert.match(styles, /\.publications ol\.bibliography li \.periodical[\s\S]*?font-family:\s*var\(--font-display\);/);
+  assert.match(styles, /\.news table th[\s\S]*?font-family:\s*var\(--font-display\);/);
+});
