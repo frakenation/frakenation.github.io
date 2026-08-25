@@ -40,6 +40,7 @@ html[data-palette="coffee"] {
   --glass-border: rgba(255, 255, 255, 0.62);
   --shadow-warm: rgba(54, 36, 27, 0.18);
   --background-wash: rgba(238, 227, 209, 0.2);
+  --badge-contrast: #f8f2e8;
 }
 
 html[data-palette="forest"] {
@@ -53,6 +54,7 @@ html[data-palette="forest"] {
   --glass-border: rgba(250, 252, 245, 0.66);
   --shadow-warm: rgba(18, 52, 42, 0.18);
   --background-wash: rgba(219, 230, 215, 0.2);
+  --badge-contrast: #f2f5ec;
 }
 
 html {
@@ -171,6 +173,37 @@ button,
 select,
 textarea {
   font-family: var(--font-utility);
+}
+
+.publications ol.bibliography li .abbr abbr {
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background-color: var(--ink-primary) !important;
+  box-shadow: 0 0.35rem 0.9rem rgba(54, 36, 27, 0.16);
+  color: var(--badge-contrast) !important;
+}
+
+.publications ol.bibliography li .abbr abbr a,
+.publications ol.bibliography li .abbr abbr a:hover {
+  color: var(--badge-contrast) !important;
+}
+
+.publications ol.bibliography li .periodical,
+.news table th {
+  color: var(--ink-muted);
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: 0.015em;
+}
+
+.publications ol.bibliography li .periodical {
+  font-size: 1.08rem;
+  line-height: 1.25;
+}
+
+.news table th {
+  font-size: 1.05rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .site-surface {
@@ -294,6 +327,11 @@ blockquote {
   .abstract.hidden p {
     font-size: 0.96rem;
     line-height: 1.68;
+  }
+
+  .publications ol.bibliography li .periodical,
+  .news table th {
+    font-size: 1rem;
   }
 
   .navbar .container {
