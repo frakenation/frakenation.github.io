@@ -13,7 +13,7 @@ Refine the existing Museum Glass homepage without changing its background, palet
 ## Portrait contact block
 
 - Replace the visible address with `tyang5990@gmail.com`.
-- Render the address as a direct `mailto:tyang5990@gmail.com` link.
+- Prefix the visible address with `📧` and keep both the emoji and address inside the direct `mailto:tyang5990@gmail.com` link.
 - Keep `_data/socials.yml` synchronized so metadata and search integrations use the same address.
 - Remove `Shanghai Jiao Tong University` and `Shanghai, China` from the portrait metadata.
 - Place exactly three icon links below the email: GitHub, Google Scholar, and Bilibili.
