@@ -14,6 +14,7 @@ Refine the existing Museum Glass homepage without changing its background, palet
 
 - Replace the visible address with `tyang5990@gmail.com`.
 - Render the address as a direct `mailto:tyang5990@gmail.com` link.
+- Keep `_data/socials.yml` synchronized so metadata and search integrations use the same address.
 - Remove `Shanghai Jiao Tong University` and `Shanghai, China` from the portrait metadata.
 - Place exactly three icon links below the email: GitHub, Google Scholar, and Bilibili.
 - Use the existing Font Awesome and Academicons fonts; do not download new icon assets.

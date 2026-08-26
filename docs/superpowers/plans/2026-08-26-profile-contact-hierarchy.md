@@ -30,13 +30,14 @@ Run `node --test test/museum-glass.test.mjs`. Expect the new profile contract te
 **Files:**
 
 - Modify: `_pages/about.md`
+- Modify: `_data/socials.yml`
 - Modify: `_layouts/about.liquid`
 - Modify: `_pages/blog.md`
 - Test: `test/museum-glass.test.mjs`
 
 - [ ] **Step 1: Update the homepage frontmatter**
 
-Add `display_name: Tingyu Yang · Theo Yang`. Replace `profile.more_info` with a clickable email and a `.profile-contact-icons` container holding accessible GitHub, Google Scholar, and Bilibili anchors. Set `social: false` and remove the location paragraphs.
+Add `display_name: Tingyu Yang · Theo Yang`. Replace `profile.more_info` with a clickable email and a `.profile-contact-icons` container holding accessible GitHub, Google Scholar, and Bilibili anchors. Set `social: false`, remove the location paragraphs, and update the canonical email in `_data/socials.yml`.
 
 - [ ] **Step 2: Add targeted title hooks**
 
@@ -72,4 +73,4 @@ Run `npx prettier _pages/about.md _layouts/about.liquid _pages/blog.md _sass/_mu
 
 - [ ] **Step 5: Commit and push**
 
-Stage only the five implementation/test files, commit with `style: refine profile contact hierarchy`, and push `main` to `origin` without adding `.superpowers/` or `Blog/`.
+Stage only the six implementation/test files plus the updated spec and plan, commit with `style: refine profile contact hierarchy`, and push `main` to `origin` without adding `.superpowers/` or `Blog/`.

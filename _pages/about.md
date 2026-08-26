@@ -2,6 +2,7 @@
 layout: about
 title: about
 permalink: /
+display_name: Tingyu Yang · Theo Yang
 subtitle: >
   Undergraduate Researcher · <a href="https://en.sjtu.edu.cn/" target="_blank">Shanghai Jiao Tong University</a> ·
   Advised by <a href="https://xiaoyunyuan.net/" target="_blank">Prof. Xiaoyun Yuan</a> @ <a href="https://xiaoyunyuan.net/" target="_blank">OpticAI Lab</a>
@@ -11,12 +12,15 @@ profile:
   image: prof_pic.png
   image_circular: false
   more_info: >
-    <p>📧 frakenation@gmail.com</p>
-    <p>Shanghai Jiao Tong University</p>
-    <p>Shanghai, China</p>
+    <p class="profile-email"><a href="mailto:tyang5990@gmail.com">tyang5990@gmail.com</a></p>
+    <div class="profile-contact-icons" aria-label="Profile links">
+      <a href="https://github.com/frakenation" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub"><i class="fa-brands fa-github"></i></a>
+      <a href="https://scholar.google.com/citations?user=qpXj0YIAAAAJ" target="_blank" rel="noopener noreferrer" aria-label="Google Scholar" title="Google Scholar"><i class="ai ai-google-scholar"></i></a>
+      <a href="https://space.bilibili.com/433206981/upload/video" target="_blank" rel="noopener noreferrer" aria-label="Bilibili" title="Bilibili"><i class="fa-brands fa-bilibili"></i></a>
+    </div>
 
 selected_papers: true
-social: true
+social: false
 
 announcements:
   enabled: true
