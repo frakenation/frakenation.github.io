@@ -55,7 +55,7 @@ test("the homepage identity and portrait contacts are compact and actionable", (
   const moreInfo = about.match(/more_info:\s*>\s*([\s\S]*?)\n\nselected_papers:/)?.[1] ?? "";
 
   assert.match(about, /display_name:\s*Tingyu Yang · Theo Yang/);
-  assert.match(moreInfo, /href="mailto:tyang5990@gmail\.com"/);
+  assert.match(moreInfo, /href="mailto:tyang5990@gmail\.com">📧 tyang5990@gmail\.com<\/a>/);
   assert.match(moreInfo, /href="https:\/\/github\.com\/frakenation"/);
   assert.match(moreInfo, /href="https:\/\/scholar\.google\.com\/citations\?user=qpXj0YIAAAAJ"/);
   assert.match(moreInfo, /href="https:\/\/space\.bilibili\.com\/433206981\/upload\/video"/);

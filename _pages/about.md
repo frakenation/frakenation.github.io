@@ -12,7 +12,7 @@ profile:
   image: prof_pic.png
   image_circular: false
   more_info: >
-    <p class="profile-email"><a href="mailto:tyang5990@gmail.com">tyang5990@gmail.com</a></p>
+    <p class="profile-email"><a href="mailto:tyang5990@gmail.com">📧 tyang5990@gmail.com</a></p>
     <div class="profile-contact-icons" aria-label="Profile links">
       <a href="https://github.com/frakenation" target="_blank" rel="noopener noreferrer" aria-label="GitHub" title="GitHub"><i class="fa-brands fa-github"></i></a>
       <a href="https://scholar.google.com/citations?user=qpXj0YIAAAAJ" target="_blank" rel="noopener noreferrer" aria-label="Google Scholar" title="Google Scholar"><i class="ai ai-google-scholar"></i></a>

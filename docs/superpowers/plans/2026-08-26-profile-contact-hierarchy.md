@@ -37,7 +37,7 @@ Run `node --test test/museum-glass.test.mjs`. Expect the new profile contract te
 
 - [ ] **Step 1: Update the homepage frontmatter**
 
-Add `display_name: Tingyu Yang · Theo Yang`. Replace `profile.more_info` with a clickable email and a `.profile-contact-icons` container holding accessible GitHub, Google Scholar, and Bilibili anchors. Set `social: false`, remove the location paragraphs, and update the canonical email in `_data/socials.yml`.
+Add `display_name: Tingyu Yang · Theo Yang`. Replace `profile.more_info` with a clickable `📧 tyang5990@gmail.com` email link and a `.profile-contact-icons` container holding accessible GitHub, Google Scholar, and Bilibili anchors. Set `social: false`, remove the location paragraphs, and update the canonical email in `_data/socials.yml`.
 
 - [ ] **Step 2: Add targeted title hooks**
 
