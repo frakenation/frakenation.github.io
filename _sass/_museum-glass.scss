@@ -66,7 +66,12 @@ body {
   min-height: 100vh;
   isolation: isolate;
   color: var(--ink-strong);
-  background: transparent;
+  background-color: #e8dfd1;
+  background-image: url("../img/museum-glass-background-placeholder.webp");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
   font-family: var(--font-utility);
 }
 
@@ -354,6 +359,10 @@ blockquote {
 }
 
 @media (max-width: 767.98px) {
+  body {
+    background-position: 73% center;
+  }
+
   body::before {
     background-image: url("../img/museum-glass-background.jpg");
     background-image: image-set(

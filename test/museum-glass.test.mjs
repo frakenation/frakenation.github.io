@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import test from "node:test";
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
@@ -40,6 +40,33 @@ test("local fonts and optimized backgrounds exist", () => {
   for (const asset of assets) {
     assert.equal(existsSync(new URL(`../${asset}`, import.meta.url)), true, asset);
   }
+});
+
+test("the correct high-resolution background is preloaded before the main stylesheet", () => {
+  const head = read("_includes/head.liquid");
+  const linkTags = [...head.matchAll(/<link[\s\S]*?>/g)].map(([tag]) => tag);
+  const desktopPreload = linkTags.find((tag) => tag.includes("museum-glass-background-desktop.webp"));
+  const mobilePreload = linkTags.find((tag) => tag.includes("museum-glass-background-mobile.webp"));
+
+  for (const preload of [desktopPreload, mobilePreload]) {
+    assert.match(preload ?? "", /rel="preload"/);
+    assert.match(preload ?? "", /as="image"/);
+    assert.match(preload ?? "", /type="image\/webp"/);
+    assert.match(preload ?? "", /fetchpriority="high"/);
+  }
+  assert.match(desktopPreload ?? "", /media="\(min-width: 768px\)"/);
+  assert.match(mobilePreload ?? "", /media="\(max-width: 767\.98px\)"/);
+  assert.ok(head.indexOf("museum-glass-background-desktop.webp") < head.indexOf("/assets/css/main.css"));
+  assert.ok(head.indexOf("museum-glass-background-mobile.webp") < head.indexOf("/assets/css/main.css"));
+});
+
+test("a tiny painting-derived placeholder fills the background while high-resolution imagery loads", () => {
+  const placeholder = new URL("../assets/img/museum-glass-background-placeholder.webp", import.meta.url);
+  const styles = read("_sass/_museum-glass.scss");
+
+  assert.equal(existsSync(placeholder), true);
+  assert.ok(statSync(placeholder).size <= 10 * 1024);
+  assert.match(styles, /body\s*{[^}]*museum-glass-background-placeholder\.webp[^}]*background-size:\s*cover;/s);
 });
 
 test("publication badges and editorial metadata follow the active palette", () => {
