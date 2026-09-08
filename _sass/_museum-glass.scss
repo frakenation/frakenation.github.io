@@ -45,6 +45,7 @@ html[data-palette="coffee"] {
 }
 
 // Reserved alternate palette; keep its selector safelisted in purgecss.config.js.
+/*! purgecss ignore */
 html[data-palette="forest"] {
   --ink-primary: #173f34;
   --ink-strong: #0f2b25;
