@@ -29,8 +29,10 @@ test("the Museum Glass stylesheet is imported and defines both palettes", () => 
 
 test("the reserved forest palette survives production CSS purging", () => {
   const purgeConfig = read("purgecss.config.js");
+  const deployWorkflow = read(".github/workflows/deploy.yml");
 
   assert.match(purgeConfig, /safelist:\s*\[[^\]]*data-palette\.\*forest[^\]]*\]/s);
+  assert.equal(deployWorkflow.match(/- "purgecss\.config\.js"/g)?.length, 2);
 });
 
 test("local fonts and optimized backgrounds exist", () => {
