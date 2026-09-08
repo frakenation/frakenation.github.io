@@ -69,6 +69,20 @@ test("a tiny painting-derived placeholder fills the background while high-resolu
   assert.match(styles, /body\s*{[^}]*museum-glass-background-placeholder\.webp[^}]*background-size:\s*cover;/s);
 });
 
+test("the homepage uses balanced glass transparency without weakening reading surfaces", () => {
+  const styles = read("_sass/_museum-glass.scss");
+  const coffee = styles.match(/html\[data-palette="coffee"\]\s*{([^}]*)}/)?.[1] ?? "";
+  const forest = styles.match(/html\[data-palette="forest"\]\s*{([^}]*)}/)?.[1] ?? "";
+
+  assert.match(coffee, /--glass-home:\s*rgba\(248, 242, 232, 0\.52\);/);
+  assert.match(coffee, /--glass-home-mobile:\s*rgba\(248, 242, 232, 0\.8\);/);
+  assert.match(coffee, /--glass-reading:\s*rgba\(248, 242, 232, 0\.84\);/);
+  assert.match(coffee, /--glass-mobile:\s*rgba\(248, 242, 232, 0\.88\);/);
+  assert.match(forest, /--glass-home:\s*rgba\(237, 241, 231, 0\.54\);/);
+  assert.match(forest, /--glass-home-mobile:\s*rgba\(237, 241, 231, 0\.82\);/);
+  assert.match(styles, /@media \(max-width: 767\.98px\)[\s\S]*?\.site-surface--home\s*{[^}]*background:\s*var\(--glass-home-mobile\);/);
+});
+
 test("publication badges and editorial metadata follow the active palette", () => {
   const styles = read("_sass/_museum-glass.scss");
 

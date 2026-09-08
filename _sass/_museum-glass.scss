@@ -34,7 +34,8 @@ html[data-palette="coffee"] {
   --ink-strong: #2e211d;
   --ink-muted: #75584a;
   --accent: #8a5d3b;
-  --glass-home: rgba(248, 242, 232, 0.62);
+  --glass-home: rgba(248, 242, 232, 0.52);
+  --glass-home-mobile: rgba(248, 242, 232, 0.8);
   --glass-reading: rgba(248, 242, 232, 0.84);
   --glass-mobile: rgba(248, 242, 232, 0.88);
   --glass-border: rgba(255, 255, 255, 0.62);
@@ -48,7 +49,8 @@ html[data-palette="forest"] {
   --ink-strong: #0f2b25;
   --ink-muted: #45685b;
   --accent: #557d68;
-  --glass-home: rgba(237, 241, 231, 0.64);
+  --glass-home: rgba(237, 241, 231, 0.54);
+  --glass-home-mobile: rgba(237, 241, 231, 0.82);
   --glass-reading: rgba(237, 241, 231, 0.86);
   --glass-mobile: rgba(237, 241, 231, 0.9);
   --glass-border: rgba(250, 252, 245, 0.66);
@@ -384,6 +386,10 @@ blockquote {
     box-shadow: 0 1rem 2.7rem rgba(54, 36, 27, 0.14);
     backdrop-filter: blur(15px) saturate(0.8);
     -webkit-backdrop-filter: blur(15px) saturate(0.8);
+  }
+
+  .site-surface--home {
+    background: var(--glass-home-mobile);
   }
 
   .post-title {
