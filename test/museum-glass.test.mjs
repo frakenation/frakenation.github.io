@@ -20,7 +20,7 @@ test("the Museum Glass stylesheet is imported and defines both palettes", () => 
   assert.match(read("assets/css/main.scss"), /@use "museum-glass";/);
   const styles = read("_sass/_museum-glass.scss");
   assert.match(styles, /html\[data-palette="coffee"\]/);
-  assert.match(styles, /html\[data-palette="forest"\]/);
+  assert.match(styles, /\/\*! purgecss ignore \*\/[\s\S]*?html\[data-palette="forest"\]/);
   assert.match(styles, /--glass-home:/);
   assert.match(styles, /--glass-reading:/);
   assert.match(styles, /museum-glass-background-mobile\.webp/);
