@@ -3,5 +3,7 @@ module.exports = {
   css: ["_site/assets/css/*.css"],
   output: "_site/assets/css/",
   skippedContentGlobs: ["_site/assets/**/*.html"],
-  safelist: [/data-palette.*forest/],
+  safelist: {
+    greedy: [/data-palette.*forest/],
+  },
 };

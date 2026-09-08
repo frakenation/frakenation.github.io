@@ -31,7 +31,7 @@ test("the reserved forest palette survives production CSS purging", () => {
   const purgeConfig = read("purgecss.config.js");
   const deployWorkflow = read(".github/workflows/deploy.yml");
 
-  assert.match(purgeConfig, /safelist:\s*\[[^\]]*data-palette\.\*forest[^\]]*\]/s);
+  assert.match(purgeConfig, /safelist:\s*{[^}]*greedy:\s*\[[^\]]*data-palette\.\*forest[^\]]*\][^}]*}/s);
   assert.equal(deployWorkflow.match(/- "purgecss\.config\.js"/g)?.length, 2);
 });
 
