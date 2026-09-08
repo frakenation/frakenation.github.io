@@ -27,6 +27,12 @@ test("the Museum Glass stylesheet is imported and defines both palettes", () => 
   assert.match(styles, /@supports not \(backdrop-filter: blur\(1px\)\)/);
 });
 
+test("the reserved forest palette survives production CSS purging", () => {
+  const purgeConfig = read("purgecss.config.js");
+
+  assert.match(purgeConfig, /safelist:\s*\[[^\]]*data-palette\.\*forest[^\]]*\]/s);
+});
+
 test("local fonts and optimized backgrounds exist", () => {
   const assets = [
     "assets/fonts/cormorant-garamond-variable.woff2",
