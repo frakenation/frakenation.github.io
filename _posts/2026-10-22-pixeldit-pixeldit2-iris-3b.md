@@ -1,0 +1,286 @@
+---
+layout: post
+title: "PixelDiT → PixelDiT2 → Iris-3B"
+date: 2026-10-22 00:00:00 +0800
+description: 从像素空间扩散的计算瓶颈与表征难题出发，串讲 DiP、DeCo、PixelDiT、PixelDiT2 与 Iris-3B 的架构演进和实验证据。
+tags: [diffusion, PixelDiT, image-generation]
+categories: [research-notes]
+thumbnail: /assets/img/blog/pixeldit-seminar/pixeldit-architecture.svg
+---
+
+<div class="pixeldit-article">
+<section class="pixeldit-section" id="question"><div class="article-section-head">
+<div class="section-index">§ 01</div>
+<div>
+<h2>像素空间的难题与前史</h2>
+<p class="section-deck">潜变量扩散依赖预训练自编码器，能够节省算力，却引入重建误差；直接在 RGB 中生成，又要面对密集像素和难学的表示。</p>
+</div>
+</div>
+<div class="article-section-content">
+<div class="prose"><p class="lead">主线从 PixelDiT 到 PixelDiT2 依次推进。第一篇问：<strong>怎样在计算可控的前提下，对像素做足够细的建模？</strong>第二篇问：<strong>即使算得动，像素扩散为何仍然学得慢？</strong></p></div>
+<div class="article-equation medium"><img src="/assets/img/blog/pixeldit-seminar/rectified-flow-equation.svg" alt="x_t = t x + (1-t) epsilon; v = x-epsilon" loading="lazy" decoding="async"></div>
+<p class="eq-caption">共同背景：像素空间中的 rectified flow；这里 t = 0 对应噪声，t = 1 对应干净图像。</p>
+<div class="concept-grid">
+<div>
+<div class="article-kicker">BOTTLENECK I · COMPUTE</div>
+<h3>像素序列过长</h3>
+<p>全图像素 token 上的自注意力代价极高。加大 patch 虽可缩短序列，却损失细粒度像素交互。</p>
+</div>
+<div>
+<div class="article-kicker">BOTTLENECK II · REPRESENTATION</div>
+<h3>语义表示也要现学</h3>
+<p>直接处理 RGB 时，网络需要同时学会可用于去噪的视觉表示和像素生成，训练收敛较慢。</p>
+</div>
+</div>
+<div class="prelude">
+<div class="rule"></div>
+<div class="article-kicker">PRELUDE · DiP / DeCo</div>
+<h3>大 patch 之后，如何把细节还给像素？</h3>
+<p>在 PixelDiT 之前，DiP 与 DeCo 两篇同期工作已把“全局语义 + 局部像素更新”作为共同的架构问题；它们分别从局部归纳偏置和频率分工出发。</p>
+<div class="article-kicker">DiP · PATCH DETAILER HEAD</div>
+<h3>DiT 管全局，U-Net 补局部</h3>
+<p>16×16 大 patch 的 DiT 建模跨 patch 结构；逐 patch 的浅层卷积 U-Net 接收噪声像素及对应 DiT 特征，预测局部细节。作者比较细节头的三种接入位置，最终选用接在 DiT 末端的方案。</p>
+<figure class="figure dip-main"><img src="/assets/img/blog/pixeldit-seminar/dip-figure-5-detailer-placement.svg" alt="DiP 原论文 Figure 5：后置细节头、层间注入与混合注入三种位置" loading="lazy" decoding="async"><figcaption class="caption"><b>DiP 原论文 Fig. 5 · 细节头放在哪里。</b>左：DiT 末端细化；中：层间注入；右：混合注入。三者均改善 DiT 基线，论文最终采用左侧方案。<a href="https://arxiv.org/abs/2511.18822" target="_blank" rel="noopener noreferrer">原图与论文 ↗</a></figcaption></figure>
+<div class="entry dip-detail">
+<div>
+<div class="article-kicker">DETAIL · LOCAL INDUCTIVE BIAS</div>
+<p>选定接入位置后，细节头在每个 patch 内独立工作；U-Net 的下采样与跳连提供局部纹理归纳偏置，DiT 特征在瓶颈层注入。</p>
+</div>
+<figure class="figure"><img src="/assets/img/blog/pixeldit-seminar/dip-detailer-head.svg" alt="DiP 原论文 Patch Detailer Head：逐 patch 卷积 U-Net 与全局特征注入" loading="lazy" decoding="async"><figcaption class="caption">细节头内部结构，作为 Figure 5 的补充。图中 <i>p<sub>i</sub></i> 是噪声 patch，<i>s<sub>i</sub></i> 是对应的 DiT 特征。<a href="https://arxiv.org/abs/2511.18822" target="_blank" rel="noopener noreferrer">原图与论文 ↗</a></figcaption></figure>
+</div>
+<div class="article-kicker">DeCo · FREQUENCY DECOUPLING</div>
+<h3>DiT 学低频语义，像素解码器补高频</h3>
+<p>DiT 处理下采样输入；无注意力的逐像素解码器接收全分辨率噪声图，并用 DiT 语义作 AdaLN 条件，预测像素速度。训练时再用 JPEG 量化表加权的 8×8 DCT 损失强调可感知的频率。</p>
+<figure class="figure deco-figure"><img src="/assets/img/blog/pixeldit-seminar/deco-architecture.svg" alt="DeCo 原论文总架构：DiT 语义条件、逐像素解码器与 DCT 频率损失" loading="lazy" decoding="async"><figcaption class="caption">DeCo 原论文架构图：上方是 DiT 与频率损失，下方展开无注意力的像素解码器。<a href="https://arxiv.org/abs/2511.19365" target="_blank" rel="noopener noreferrer">原图与论文 ↗</a></figcaption></figure>
+<p class="bridge"><strong>接到 PixelDiT：</strong>三者都在分离全局建模与像素更新；PixelDiT 进一步用 patch Transformer + pixel Transformer 的双层架构，并让像素分支保留压缩后的跨 patch 注意力。</p>
+</div>
+</div></section>
+<section class="pixeldit-section" id="pixeldit"><div class="article-section-head">
+<div class="section-index">§ 02</div>
+<div>
+<h2>PixelDiT：双层 Transformer</h2>
+<p class="section-deck">粗尺度 patch 负责全局语义，轻量 pixel 分支负责每个像素的更新。</p>
+</div>
+</div>
+<div class="article-section-content">
+<div class="thesis">核心设计是让“在哪里生成什么”与“如何更新像素”分别由不同粒度的 token 承担，再通过语义条件连接。</div>
+<figure class="figure"><img src="/assets/img/blog/pixeldit-seminar/pixeldit-architecture.svg" alt="PixelDiT 原论文 Figure 1：patch DiT 与 pixel PiT，右侧为 PiT block" loading="lazy" decoding="async"><figcaption class="caption"><b>原论文 Fig. 1 · 总架构与 PiT block。</b>带噪图分别做 16×16 patchify 和 1×1 patchify。上路 N 个 DiT block 产生语义 token；下路 M 个 PiT block 更新像素 token。右侧展示压缩、全局注意力、展开以及像素级 AdaLN。</figcaption></figure><div class="article-equation small"><img src="/assets/img/blog/pixeldit-seminar/pixeldit-token-shape-equation.svg" alt="L=HW/p^2, pixel token tensor B times HW times D_pix" loading="lazy" decoding="async"></div>
+<p class="eq-caption">p = 16 时，全局注意力面对 H W / 256 个 patch token；PixelDiT 的 D<sub>pix</sub> = 16。</p>
+<div class="rule"></div>
+<div class="side-by">
+<div>
+<div class="article-kicker">MECHANISM 01</div>
+<h3>Pixel token compaction</h3>
+<p>PiT 在注意力前把每个 patch 内 p² 个像素 token 学习式压成一个 token，完成跨 patch 的全局交互后，再展开回像素。逐像素主干和残差连接保留局部信息。</p>
+</div>
+<div>
+<div class="article-kicker">MECHANISM 02</div>
+<h3>Pixel-wise AdaLN</h3>
+<p>一个语义 token 经线性映射产生对应 patch 内每个像素各自的六组调制参数，分别控制注意力和前馈层的缩放、平移与门控。</p>
+</div>
+</div>
+<div class="article-equation small"><img src="/assets/img/blog/pixeldit-seminar/pixel-wise-adaln-equation.svg" alt="Theta=Phi(s_cond) in R^{BL times p² times 6D_pix}" loading="lazy" decoding="async"></div>
+<figure class="figure half"><img src="/assets/img/blog/pixeldit-seminar/pixeldit-adaln-granularity.svg" alt="PixelDiT 原论文 Figure 2：全局、patch、像素级 AdaLN 的区别" loading="lazy" decoding="async"><figcaption class="caption"><b>原论文 Fig. 2 · AdaLN 粒度。</b>A 在全图广播同一条件；B 每个 patch 一组；C 对 patch 内每个像素输出不同参数。PixelDiT 使用 C。</figcaption></figure><p class="note">训练使用像素空间 rectified flow 的 velocity matching，并在 patch 分支的中间层加入 REPA 表征对齐。文字生成版本仅在 patch 分支改用多模态 DiT；pixel 分支不直接接收文本 token。</p>
+</div></section>
+<section class="pixeldit-section" id="pixeldit2"><div class="article-section-head">
+<div class="section-index">§ 03</div>
+<div>
+<h2>PixelDiT2：把表征先验接入每一步</h2>
+<p class="section-deck">保留像素空间的生成轨迹，改用单路径 patch denoiser；冻结视觉编码器在采样过程中持续提供空间条件。</p>
+</div>
+</div>
+<div class="article-section-content">
+<div class="thesis">第二篇的改变涉及<strong>去噪主干</strong>和<strong>条件来源</strong>：主干变成单路径 patch DiT；从当前噪声图像提取的 DINOv3 特征，经过时间条件投影后注入每层。</div>
+<figure class="figure arch2"><img src="/assets/img/blog/pixeldit-seminar/pixeldit2-architecture.svg" alt="PixelDiT2 原论文架构图：噪声图同时进入冻结 ViT 与 patch DiT" loading="lazy" decoding="async"><figcaption class="caption"><b>原论文 Fig. 1 中的架构图。</b>当前 x<sub>t</sub> 同时进入像素 denoiser 和冻结 DINOv3。P<sub>g</sub> 是带 timestep AdaLN 的单个 DiT 风格 block；输出的 grounding token 在同一 patch 网格上进行 spatial AdaLN 调制。</figcaption></figure><div class="article-equation medium"><img src="/assets/img/blog/pixeldit-seminar/pixeldit2-grounding-equation.svg" alt="gbar_t=E_frozen(x_t), g_t=P_g(gbar_t,t)" loading="lazy" decoding="async"></div>
+<p class="eq-caption">编码器看的是当前 x<sub>t</sub>，所以推理时每个去噪步都要运行；P<sub>g</sub> 学习适配不同噪声强度。</p>
+<div class="concept-grid">
+<div>
+<div class="article-kicker">REPRESENTATION GROUNDING</div>
+<h3>空间对齐的条件</h3>
+<p>DINOv3 与 denoiser 都以 16×16 为 patch，grounding token 一一对应空间位置。条件通过 spatial AdaLN 作用于 DiT block，区别于 PixelDiT 中 PiT 的逐像素 AdaLN。</p>
+</div>
+<div>
+<div class="article-kicker">TRAINING / SAMPLING</div>
+<h3>先预测干净图，再换算速度</h3>
+<p>PixelDiT2 输出 x̂；训练损失在 velocity 空间计算，另保留 REPA。CFG 的无条件分支同时丢弃类别和 grounding，避免 DINO 特征泄漏类别信息。</p>
+</div>
+</div>
+<div class="article-equation long"><img src="/assets/img/blog/pixeldit-seminar/pixeldit2-objective-equation.svg" alt="vhat=(xhat-x_t)/max(1-t,tau), diffusion loss=E||vhat-v||², tau=.05" loading="lazy" decoding="async"></div>
+<p class="eq-caption">原论文 Eq. (2)–(3)。目标形式变化要与主干和条件路径的变化分别理解。</p>
+<div class="side-by">
+<figure class="figure"><img src="/assets/img/blog/pixeldit-seminar/pixeldit2-representation-stability.svg" alt="PixelDiT2 原论文 Fig. 4a 表征稳定性" loading="lazy" decoding="async"><figcaption class="caption"><b>原论文 Fig. 4(a) · P<sub>g</sub> 的作用。</b>原始 DINO 表征随噪声增强明显偏移，投影后 grounding token 与其干净输入对应输出的余弦相似度保持在约 0.77 以上。</figcaption></figure><div class="prose">
+<div class="article-kicker">WHY THIS ADAPTER?</div>
+<p>冻结 DINOv3 本身只在干净图像上预训练。直接把它的噪声图特征用于调制存在分布偏移，时间条件投影承担这种适配。</p>
+<p>原论文指出，稳定的投影输出并非恢复原始干净图特征，而是形成随时间相对稳定、供去噪器使用的条件。对编码器进行联合或分阶段适配，在报告的设置中都没有超过冻结版本。</p>
+</div>
+</div>
+</div></section>
+<section class="pixeldit-section" id="iris"><div class="article-section-head">
+<div class="section-index">§ 04</div>
+<div>
+<h2>Iris-3B：扩展规模，再检验迁移</h2>
+<p class="section-deck">这篇工作沿用 PixelDiT 的双层像素设计，将文字生图主干扩大到约 30 亿参数，并检验像素生成先验在深度估计和图像复原中的价值。</p>
+</div>
+</div>
+<div class="article-section-content">
+<div class="thesis">架构上的关键组合：<strong>FLUX.1 式双流接单流主干</strong>，后接 <strong>PixelDiT 式 PiT 像素头</strong>。Iris-3B 从头预训练；论文中的 FLUX.2 Klein 像素化属于另一个独立的转换实验。</div>
+<figure class="figure"><img src="/assets/img/blog/pixeldit-seminar/iris3b-architecture.svg" alt="Iris-3B 原论文 Fig. 4：双流和单流混合主干、PiT 像素头与内部模块" loading="lazy" decoding="async"><figcaption class="caption"><b>原论文 Fig. 4 · Iris-3B 总架构。</b>带噪 RGB 图像按 16×16 分 patch，先经过 8 层双流 MMDiT，随后经过 16 层单流 block；输出的 patch 表示调制 4 层 PiT，把像素直接预测出来。</figcaption></figure>
+<div class="concept-grid">
+<div>
+<div class="article-kicker">FLUX.1-STYLE TRUNK</div>
+<h3>双流接单流</h3>
+<p>双流层让文字与图像使用各自的投影和前馈权重，在联合 attention 中交互；单流层把两类 token 拼接，使用共享权重继续建模。这是 Iris-3B 借鉴的 FLUX.1 混合结构，具体深度为 8 加 16。</p>
+</div>
+<div>
+<div class="article-kicker">PIXELDIT-STYLE HEAD</div>
+<h3>四层 PiT 输出像素</h3>
+<p>PiT 接收 patch 语义条件，对每个像素做独立调制；跨 patch 的 attention 仍通过每个 patch 压缩得到的一个 token 完成。它延续第一篇的像素头，架构路线与 PixelDiT2 的单路径 patch 去噪器不同。</p>
+</div>
+</div>
+<div class="prose"><p>为扩大模型，主干还引入 20 个 query head 与 5 个 key/value head 的分组查询 attention、sigmoid 门控、前后 RMSNorm，以及跨 block 共享投影并加入每层偏置的时间调制。冻结的 Qwen3-VL-4B 负责文字编码，12 层特征经可学习的层汇聚和两层 refiner 送入生成主干。作者报告共享调制在相同 FLOPs 下比逐层 AdaLN 减少约 28% 的对应模型参数。</p></div>
+<div class="article-equation medium"><img src="/assets/img/blog/pixeldit-seminar/iris3b-flow-equation.svg" alt="Iris-3B 的 rectified flow 定义 x_sigma=(1-sigma)x_0+sigma epsilon, v=epsilon-x_0" loading="lazy" decoding="async"></div>
+<p class="eq-caption">Iris-3B 的噪声参数记为 σ，σ = 1 是纯噪声；符号方向与前文 PixelDiT2 使用的 t 相反。</p>
+<div class="rule"></div>
+<div class="article-kicker">WHAT THE PAPER ADDS</div>
+<div class="concept-grid">
+<div>
+<h3>规模和训练协议</h3>
+<p>先在 256² 消融 x 与 v 预测及 REPA 等对齐方式，再用 v 预测与 DINOv2 REPA，按 256 → 512 → 1024 分辨率训练并进行精选数据微调。REPA 只用于 256 阶段；最终发布模型在 1024² 的 GenEval 为 0.798，DPG 为 86.52。</p>
+</div>
+<div>
+<h3>像素化转换对照</h3>
+<p>另将预训练的 FLUX.2 Klein base 4B 去掉 VAE，换成 16×16 RGB patch 输入与 PiT 像素头。作者用岭回归初始化输入映射，并缩小主干学习率，解决初期规则 patch 噪声。这个模型为迁移实验提供共享 FLUX.2 来源的 latent 与 pixel 对照。</p>
+</div>
+</div>
+<div class="rule"></div>
+<div class="article-kicker">DOWNSTREAM TEST · 4× RESTORATION</div>
+<table class="comparison">
+<thead><tr>
+<th>DIV2K / native Real-ESRGAN</th>
+<th>PSNR ↑</th>
+<th>SSIM ↑</th>
+<th>LPIPS ↓</th>
+<th>MUSIQ ↑</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>FLUX.2 Klein latent</td>
+<td>20.99</td>
+<td>0.557</td>
+<td>0.275</td>
+<td>67.11</td>
+</tr>
+<tr>
+<td>FLUX.2 Klein pixel</td>
+<td>20.87</td>
+<td>0.504</td>
+<td>0.274</td>
+<td>67.03</td>
+</tr>
+<tr>
+<td>Iris-3B pixel</td>
+<td>20.68</td>
+<td>0.481</td>
+<td>0.292</td>
+<td>68.01</td>
+</tr>
+</tbody>
+</table>
+<p class="note">论文 Table 6。三者均采用 HYPIR 风格的一步复原，损失由像素 MSE、LPIPS 和对抗项组成。FLUX.2 两组使用相同图像对与训练日程，像素版本没有整体优势。Iris-3B 的预训练起点、批量、训练时长、EMA 与推理后处理均不同，因此不能把三行差异归因于像素空间本身。</p>
+<figure class="figure"><img src="/assets/img/blog/pixeldit-seminar/iris3b-div2k-restoration.jpg" alt="Iris-3B 原论文 Fig. 8：DIV2K 四倍复原样例对比" loading="lazy" decoding="async"><figcaption class="caption"><b>原论文 Fig. 8 · DIV2K 复原样例。</b>左侧是 Iris-3B 的整图输出；右侧比较输入、HYPIR、FLUX.2 的 latent 与 pixel 版本、Iris-3B 和真值。区域由作者查看输出后选择，定量结论应以整集指标为准。</figcaption></figure>
+<div class="prose"><p><strong>对复原任务的直接启示：</strong>预训练像素模型并没有自动带来更好的保真度。论文还在单目深度的原始输出中测到 16×16 patch 网格，Iris-3B 在所列数据集的边界曲率比约为 1.61 至 2.25，理想无网格接近 1。PiT 的跨 patch 交互经过压缩 token，相邻 patch 的像素在原分辨率上没有直接联合处理，边界仍是结构性问题。</p></div>
+</div></section>
+<section class="pixeldit-section" id="evidence"><div class="article-section-head">
+<div class="section-index">§ 05</div>
+<div>
+<h2>结果说明了什么？</h2>
+<p class="section-deck">前两篇的消融支持各自的架构设计；Iris-3B 则把问题推进到像素生成先验的迁移表现。</p>
+</div>
+</div>
+<div class="article-section-content">
+<div class="article-kicker">PIXELDIT · COMPONENT ABLATION AT 80 EPOCHS</div>
+<table class="comparison">
+<thead><tr>
+<th>ImageNet 256² / PixelDiT-XL</th>
+<th>FID ↓</th>
+<th>说明</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Vanilla DiT/16</td>
+<td>9.84</td>
+<td>仅 patch token</td>
+</tr>
+<tr>
+<td>双层 + compaction + patch-wise AdaLN</td>
+<td>3.50</td>
+<td>恢复可计算的像素分支</td>
+</tr>
+<tr class="strong">
+<td>再加入 pixel-wise AdaLN</td>
+<td>2.36</td>
+<td>逐像素调制</td>
+</tr>
+</tbody>
+</table>
+<p class="note">取自 PixelDiT Table 5。无 compaction 的双层模型在相同训练设置下显存溢出；完整模型训练至 320 epochs 后为 FID 1.61。</p>
+<div class="rule"></div>
+<div class="article-kicker">PIXELDIT2 · MATCHED ENCODER STUDY</div>
+<table class="comparison">
+<thead><tr>
+<th>ImageNet 256² / 480 epochs</th>
+<th>FID ↓</th>
+<th>预训练特征的作用</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>裸主干</td>
+<td>2.19</td>
+<td>无额外表征路径</td>
+</tr>
+<tr>
+<td>仅 REPA</td>
+<td>1.73</td>
+<td>训练时对齐目标</td>
+</tr>
+<tr>
+<td>仅 grounding</td>
+<td>1.83</td>
+<td>去噪时空间条件</td>
+</tr>
+<tr class="strong">
+<td>REPA + grounding</td>
+<td>1.59</td>
+<td>两条路径同时启用</td>
+</tr>
+</tbody>
+</table>
+<p class="note">取自 PixelDiT2 Table 4；两条有效路径均使用 DINOv3-S/16。320 epoch 以后组合设置持续领先；早期 200 epoch 时 REPA 与组合设置的 FID 分别为 1.89 与 1.90。</p>
+<div class="facts">
+<div class="fact">
+<span class="value">1.61 → 1.46</span><span class="desc">ImageNet 256²；两篇论文各自报告的 FID</span>
+</div>
+<div class="fact">
+<span class="value">1.81 → 1.48</span><span class="desc">ImageNet 512²；PixelDiT 850 ep，PixelDiT2 680 ep</span>
+</div>
+<div class="fact">
+<span class="value">4.25×</span><span class="desc">512² 达到约 1.8 FID：850 ep 对比 200 ep</span>
+</div>
+</div>
+<p class="note">跨论文数字涉及不同模型尺寸、训练设置和采样器，适合作为论文报告的结果概览；增益的机制归因主要依据上方的受控消融。PixelDiT2 报告 256² 的 1.46 FID 使用 600 epochs、H/16 模型。</p>
+<div class="side-by">
+<figure class="figure"><img src="/assets/img/blog/pixeldit-seminar/pixeldit2-convergence.svg" alt="PixelDiT2 原论文 512 分辨率收敛曲线" loading="lazy" decoding="async"><figcaption class="caption"><b>PixelDiT2 原论文 Fig. 1 · 512² 收敛曲线。</b>200 epochs 达到 FID 1.78，680 epochs 达到 1.48。</figcaption></figure><div>
+<div class="article-kicker">QUALITATIVE / ORIGINAL SAMPLES</div>
+<div class="samples">
+<img src="/assets/img/blog/pixeldit-seminar/pixeldit2-espresso-sample.png" alt="PixelDiT2 原论文 espresso 512 样本" loading="lazy" decoding="async"><img src="/assets/img/blog/pixeldit-seminar/pixeldit2-lesser-panda-sample.png" alt="PixelDiT2 原论文 lesser panda 512 样本" loading="lazy" decoding="async"><img src="/assets/img/blog/pixeldit-seminar/pixeldit2-car-mirror-sample.png" alt="PixelDiT2 原论文 car mirror 512 样本" loading="lazy" decoding="async">
+</div>
+<p class="note">PixelDiT2 原论文 Fig. 1 的 ImageNet 512² 类别条件样本，均取自 arXiv 源文件。</p>
+</div>
+</div>
+<div class="rule"></div>
+<div class="prose">
+<div class="article-kicker">TAKEAWAY</div>
+<p class="lead">PixelDiT 建立高效的逐像素建模，PixelDiT2 在去噪过程中持续引入预训练表征，Iris-3B 把 PixelDiT 的像素头扩展到大规模文字生图，并检验它的下游迁移。三篇工作共同留下的关键问题，是如何在保留生成先验的同时维持严格的像素对齐与跨 patch 连续性。</p>
+</div>
+</div></section>
+</div>
